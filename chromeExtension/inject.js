@@ -2,33 +2,27 @@
 var inject = {
 	init: () => {
 		inject.connect();
+	},
+	connect: () => {
+		// inject.port = chrome.runtime.connect({name: "contentScript"});
+		chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+			if(msg.type === 'frequency_data') {
+				inject.transfer(msg.frequency_data)
+			}
+		});
 		window.addEventListener("message", (event) => {
 			// We only accept messages from ourselves
 			if (event.source != window)
 				return;
-			/*if (event.data.type === "initbg") {
-				inject.connect();
-			}
-			if (event.data.type === "terminatebg") {
-				inject.disconnect();
-			}*/
 			if (event.data.type === "fullscreenRequest")
 				inject.fullscreenRequest(event.data.data);
-		});
-	},
-	disconnect: () => {
-		inject.port.disconnect();
-	},
-	connect: () => {
-		inject.port = chrome.runtime.connect({ name: "contentScript" });
-		console.log('connected to chrome runtime');
-		inject.port.onDisconnect.addListener(() => {
-			console.log('Disconnected from chrome runtime');
-		})
-		inject.port.onMessage.addListener((msg) => {
-			if(msg.type === 'frequency_data') {
-				inject.transfer(msg.frequency_data)
+			if (event.data.type === "close") {
+				chrome.runtime.sendMessage({ type: 'close' });
 			}
+			/*if (event.data.type === "init")
+				chrome.runtime.sendMessage({ type: "init" });
+			if (event.data.type === "term")
+				chrome.runtime.sendMessage({ type: "term" });*/
 		});
 	},
 	transfer: (frequency_data) => {
@@ -39,7 +33,7 @@ var inject = {
 		window.postMessage(data, "*");
 	},
 	fullscreenRequest: (request) => {
-		inject.port.postMessage({ type: "fs", data: request });
+		chrome.runtime.sendMessage({ type: "fs", data: request });
 		var data = {
 			type: "fullScreenDone"
 		};

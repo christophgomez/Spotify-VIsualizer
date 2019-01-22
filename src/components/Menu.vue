@@ -28,7 +28,10 @@ export default {
     logout() {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
-      this.$router.replace({name: 'home'});
+      var data = {
+				type: "close",
+			}
+      window.postMessage(data, "*");
     }
   }
 }

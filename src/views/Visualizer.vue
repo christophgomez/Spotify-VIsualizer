@@ -132,7 +132,7 @@ export default {
 			let particle;
       	for (let j = 0; j < this.particles.length; j++) {
 				  particle = this.particles[j];
-				  if(this.bands !== undefined) {
+				  if(this.bands !== undefined && this.bands !== null) {
 					  particle.energy = this.bands[particle.band] / 256;
 				  }
         		// recycle particles

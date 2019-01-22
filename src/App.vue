@@ -50,14 +50,11 @@ export default {
   created() {
     this.$wait.start('loading');
     if(localStorage.access_token) {
-      this.landing = false;
-      this.refreshToken();
       this.initVis();
       this.$router.replace({name: 'visualizer'});
     }
   },
   mounted() {
-
   },
   sockets: {
     paused: function() {
@@ -81,8 +78,10 @@ export default {
         this.terminateVis();
       } else if(to.path === '/success') {
         return;
-      } else {
+      } else if(to.path === '/visualizer') {
         this.initVis();
+      } else {
+        return;
       }
     },
   },
@@ -105,9 +104,9 @@ export default {
      /* var data = {
         type: "initbg"
       }
-      window.postMessage(data, "*");
-      data = {
-				type: "initAudio",
+      window.postMessage(data, "*");*/
+      /*var data = {
+				type: "init",
 			}
       window.postMessage(data, "*");*/
     },
@@ -127,7 +126,7 @@ export default {
         this.player = null;
       }
       /*var data = {
-        type: "terminatebg"
+        type: "term"
       }
       window.postMessage(data, "*");*/
     },
@@ -208,7 +207,6 @@ export default {
 				this.token = localStorage.access_token;
 				this.tokenExists = true;
       } else {
-        alert("Oops! Something went wrong linking your Spotify Account");
         this.tokenExists = false;
 			}
     },

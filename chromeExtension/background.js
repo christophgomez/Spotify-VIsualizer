@@ -3,14 +3,35 @@ var background = {
 	init: () => {
 		background.port = null;
 		chrome.browserAction.onClicked.addListener(background.navToWebsite);
-		chrome.runtime.onConnect.addListener(background.onConnect);
+		// chrome.runtime.onConnect.addListener(background.onConnect);
+		chrome.runtime.onMessage.addListener((msg, sender, response) => {
+			if (msg.type === "fs") {
+				chrome.windows.getCurrent((window) => {
+					var id = window.id;
+					chrome.windows.update(id, {
+						state: msg.data
+					});
+				});
+			}
+			if (msg.type === "close")
+				chrome.tabs.getSelected(function (tab) {
+					chrome.tabs.remove(tab.id, function () {});
+				});
+			/*if (msg.type === "term") {
+				background.stream = null;
+				background.audio.audioContext = null;
+				background.audio = null;
+			}
+			if (msg.type === "init") {
+				background.navToWebsite();
+			}*/
+		});
 	},
 	navToWebsite() {
 		chrome.tabs.update({
 			url: "http://localhost:8080"
 		});
 		background.stream = null;
-		chrome.tabs.getSelected(null, () => {
 			chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
 				if (chrome.runtime.lastError != undefined) {
 					error = chrome.runtime.lastError.message
@@ -21,38 +42,26 @@ var background = {
 				background.stream = stream;
 				background.createAudio(background.stream);
 			});
-		});
 	},
 	createAudio(stream) {
 		background.audio = new AudioObject(stream);
 		background.audio.jsNode.onaudioprocess = () => {
 			// retreive the data from the first channel
-			if (background.audio !== null) {
-				background.audio.audioAnalyser.getByteFrequencyData(background.audio.bands);
-				if (background.port !== null) {
-					console.log('posting data');
-					background.port.postMessage({
-						type: "frequency_data",
-						frequency_data: background.audio.bands
-					});
-				} else {
-					console.log('background port null');
-				}
-			} else {
-				console.log('background audio null');
-			}
+			background.audio.audioAnalyser.getByteFrequencyData(background.audio.bands);
+			chrome.tabs.query({
+				active: true,
+				currentWindow: true
+			}, function (tabs) {
+				chrome.tabs.sendMessage(tabs[0].id, {
+					type: "frequency_data",
+					frequency_data: background.audio.bands
+				});
+			});
 		};
-	},
-	terminateAudio() {
-		background.audio = null;
 	},
 	onConnect(port) {
 		background.port = port;
-		background.port.onMessage.addListener((msg) => {
-			if (msg.data === 'hello') {
-				console.log('message received from content script');
-				background.port.postMessage({ data: 'hello' });
-			}
+		port.onMessage.addListener((msg) => {
 			if (msg.type === "fs") {
 				chrome.windows.getCurrent((window) => {
 					var id = window.id;
@@ -61,17 +70,10 @@ var background = {
 					});
 				});
 			}
-			if (msg.type === "initAudio") {
-				//background.createAudio(background.stream);
-			}
-			if (msg.type === "terminateAudio") {
-				background.audio.audioContext = null;
-			}
 		});
-		background.port.onDisconnect.addListener((port) => {
+		/*background.port.onDisconnect.addListener((port) => {
 			background.port = null;
-			background.audio = null;
-		})
+		})*/
 	},
 }
 background.init();
