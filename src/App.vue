@@ -1,0 +1,315 @@
+<template>
+  <div id='app' :class="{show: isShowing}">
+      <notifications group="track" class='notif'/>
+      <Hamburger class='controls' :class="{show: isShowing}" v-if='landing === false'></Hamburger>
+      <router-view/>
+      <div class='controls-wrapper' v-if='landing === false'>
+        <keep-alive>
+          <Controls :token='token' :artist='artist' :album='album' :track='track' :paused='paused' class='controls' :class="{show: isShowing}"></Controls>
+        </keep-alive>
+      </div>
+  </div>
+</template>
+
+<script>
+import SpotifyService from '@/services/SpotifyService.js';
+import Nav from '@/components/Nav.vue';
+import Controls from '@/components/Controls';
+import Hamburger from '@/components/Menu';
+import screenfull from 'screenfull';
+
+export default {
+  name: 'App',
+  components: {
+    Nav,
+    Controls,
+    Hamburger
+  },
+  data() {
+    return {
+      ext: null,
+      landing: true,
+      player: null,
+      playerId: '',
+      token: '',
+      artist: '',
+      album: '',
+      prevTrack: '',
+      track: '',
+      trackId: '',
+      paused: true,
+      refreshIntervalSet: false,
+      refreshInterval: 0,
+      mouseMoveSet: false,
+      isShowing: true,
+      timedelay: 1,
+      _delay: 0,
+      notifyCount: 0,
+    }
+  },
+  created() {
+    this.$wait.start('loading');
+    if(localStorage.access_token) {
+      this.landing = false;
+      this.refreshToken();
+      this.initVis();
+      this.$router.replace({name: 'visualizer'});
+    }
+  },
+  mounted() {
+
+  },
+  sockets: {
+    paused: function() {
+      this.$notify({
+          group: 'track',
+          title: this.track + " - PAUSED",
+          text: this.artist
+        });
+    },
+    played: function() {
+      this.$notify({
+          group: 'track',
+          title: this.track,
+          text: this.artist
+        });
+    }
+  },
+  watch: {
+    $route(to, from) {
+      if(to.path === '/') {
+        this.terminateVis();
+      } else if(to.path === '/success') {
+        return;
+      } else {
+        this.initVis();
+      }
+    },
+  },
+  methods: {
+    initVis() {
+      this.landing = false;
+      if(this.token === '') {
+        this.getToken();
+      }
+      if(this.refreshIntervalSet === false) {
+        this.createRefreshInterval();
+        this.refreshIntervalSet = true;
+      }
+      if(this.mouseMoveSet === false) {
+        this._delay = setInterval(this.delayCheck, 500);
+        addEventListener('mousemove', this.mouseMove, false);
+        this.mouseMoveSet = true;
+      }
+      this.webPlayer();
+     /* var data = {
+        type: "initbg"
+      }
+      window.postMessage(data, "*");
+      data = {
+				type: "initAudio",
+			}
+      window.postMessage(data, "*");*/
+    },
+    terminateVis() {
+      this.landing = true;
+      if(this.refreshIntervalSet === true) {
+        clearInterval(this.refreshInterval);
+        this.refreshIntervalSet = false;
+      }
+      if(this.mouseMoveSet === true) {
+        clearInterval(this._delay);
+        removeEventListener('mousemove', this.mouseMove, false);
+        this.mouseMoveSet = false;
+      }
+      if(this.player !== null) {
+        this.player.disconnect();
+        this.player = null;
+      }
+      /*var data = {
+        type: "terminatebg"
+      }
+      window.postMessage(data, "*");*/
+    },
+    async webPlayer() {
+      if(this.player === null) {
+        let webPlayerSDK = document.createElement('script');    
+		    webPlayerSDK.setAttribute('src',"https://sdk.scdn.co/spotify-player.js");
+	      document.head.appendChild(webPlayerSDK);
+		  	window.onSpotifyWebPlaybackSDKReady = () => {
+     		var id;
+				this.player = new Spotify.Player({
+         	name: 'Vue Visualizer',
+          getOAuthToken: cb => {
+					this.getToken();
+            cb(this.token);
+          }
+			 	});
+			 
+			 	// Error handling
+        this.player.addListener('initialization_error', ({
+          message
+      	}) => {
+        	console.error(message);
+      	});
+        this.player.addListener('authentication_error', ({
+          message
+        }) => {
+          console.error(message);
+        });
+        this.player.addListener('account_error', ({
+        	message
+        }) => {
+        	console.error(message);
+        });
+        this.player.addListener('playback_error', ({
+          message
+        }) => {
+          console.error(message);
+			 	});
+			 
+				// Playback status updates
+        this.player.addListener('player_state_changed', state => {
+          this.stateChanged(state);
+				});
+			
+				// Ready
+        this.player.addListener('ready', ({
+          device_id
+        }) => {
+          console.log('Ready with Device ID', device_id);
+          localStorage.setItem('device_id', device_id);
+          this.songLoaded = true;
+          this.playerId = device_id;
+					this.$socket.emit('ready', {player_id: this.playerId, token: this.token});
+			 	});
+
+			 	// Not Ready
+        this.player.addListener('not_ready', ({
+          device_id
+      	}) => {
+          localStorage.removeItem('device_id');
+          this.songLoaded = false;
+          console.log('Device ID has gone offline', device_id);
+        });
+
+        // Connect to the player!
+        this.player.connect().then(success => {
+        	if (success) {
+            console.log('Webplayback SDK successfully connected to Spotify');
+          }
+         });
+        }
+			}
+      this.$socket.emit('ready', {player_id: this.playerId, access_token: this.token});
+    },
+    getToken() {
+      if(localStorage.access_token) {
+				this.token = localStorage.access_token;
+				this.tokenExists = true;
+      } else {
+        alert("Oops! Something went wrong linking your Spotify Account");
+        this.tokenExists = false;
+			}
+    },
+    async refreshToken() {
+      let refresh = localStorage.refresh_token;
+      const response = await SpotifyService.refreshToken(refresh);
+      if(response.data.success === true) {
+        let t_token = response.data.access_token;
+        localStorage.setItem('access_token', t_token);
+        this.token = t_token;
+        this.$socket.emit('tokenRefreshed', {token: this.token});
+      }
+    },
+    async createRefreshInterval() {
+      this.refreshInterval = setInterval(() => {
+        this.refreshToken();
+      }, 600000);
+    },
+    mouseMove() {
+      this.isShowing = true;
+      this.timedelay = 1;
+      clearInterval(this._delay);
+      this._delay = setInterval(this.delayCheck, 500);
+    },
+    delayCheck() {
+      if(this.paused === true) {
+        this.isShowing = true;
+        return;
+      }
+      if(this.timedelay === 4) {
+        this.isShowing = false;
+        this.timedelay = 1;
+      }
+      this.timedelay += 1;
+    },
+		stateChanged(state) {
+      if(this.notifyCount >= 2) {
+        this.notifyCount = 0;
+      }
+      this.prevTrack = this.track;
+			this.track = state.track_window.current_track.name;
+      this.paused = state.paused;
+      this.artist = state.track_window.current_track.artists[0].name + " | " + state.track_window.current_track.album.name
+      this.notifyCount += 1;
+      if(this.paused !== true && this.notifyCount < 2 && this.track !== this.prevTrack){ 
+        this.$notify({
+          group: 'track',
+          title: this.track,
+          text: this.artist
+        });
+        this.trackId = state.track_window.current_track.id;
+      }
+      this.$socket.emit('stateChanged', {state: state});
+    },
+  }
+}
+</script>
+
+<style>
+html {
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  height: 100%;
+  overflow: hidden;
+}
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  height: 100%;
+  width:100%;
+  cursor: none;
+}
+.notif {
+  font-size: 40px;
+  margin-top: 20px;
+}
+.controls-wrapper{
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+}
+
+.controls {
+  margin: 0 auto;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  visibility: hidden;
+  display:none;
+  transition: visibility 0s, display .5s ease-in-out, opacity 2s ease-in-out;
+}
+.show {
+  display:flex;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+  z-index: 1;
+  cursor: auto !important;
+}
+</style>
