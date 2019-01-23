@@ -5,8 +5,12 @@
       <div class='overlay'>
         <h1>Spotilize</h1><hr>
         <div id='extCheck'></div>
-        <md-button class="md-raised chr" v-if='ext===false' @click='install()'>Add to Chrome</md-button>
-        <Link v-if='ext===true'/>
+        <div v-if='ext===true'>
+          <Link/>
+        </div>
+        <div v-else>
+          <md-button class="md-raised chr">Add to Chrome</md-button>
+        </div>
         <footer>A Spotify visualizer made with <font-awesome-icon icon=heart style='color:red' /> by Christopher Gomez</footer>
       </div>
     </div>
