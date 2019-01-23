@@ -75,7 +75,7 @@ export default {
       }
     },
     install() {
-      chrome.webstore.install('https://chrome.google.com/webstore/detail/spotilize/jidcihllhnmbjbnoijfepopdpkpgeobe');
+      window.location = 'https://chrome.google.com/webstore/detail/spotilize/jidcihllhnmbjbnoijfepopdpkpgeobe';
     },
     setup() {
 			var i, j, particle, x, y;
