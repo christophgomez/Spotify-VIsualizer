@@ -1,6 +1,6 @@
 {
 	"name" : "Spotilize",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Chrome Extension to capture Spotify Audio and analyze the frequency data for a visualizer",
 	"permissions": [
 		"activeTab",

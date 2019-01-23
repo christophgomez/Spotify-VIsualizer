@@ -67,7 +67,7 @@ var background = {
 			}
 			if (onsite === false) {
 				chrome.tabs.update(background.tabId, {
-					url: "http://localhost:8080/"
+					url: "https://spotilize.herokuapp.com"
 				});
 			}
 			background.startCap();

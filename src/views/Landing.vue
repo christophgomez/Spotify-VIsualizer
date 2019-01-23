@@ -5,6 +5,7 @@
       <div class='overlay'>
         <h1>Spotilize</h1><hr>
         <div id='extCheck'></div>
+        <md-button class="md-raised chr" v-if='ext===false' @click='install()'>Add to Chrome</md-button>
         <Link v-if='ext===true'/>
         <footer>A Spotify visualizer made with <font-awesome-icon icon=heart style='color:red' /> by Christopher Gomez</footer>
       </div>
@@ -35,7 +36,7 @@ export default {
     }
   },
   mounted() {
-    chrome.runtime.sendMessage('dkbaigmmfcnefccifbpbcmgnonenapch', 'version', (response) => {
+    chrome.runtime.sendMessage('jidcihllhnmbjbnoijfepopdpkpgeobe', 'version', (response) => {
       if(!response) {
         document.getElementById('extCheck').innerHTML = "Whoops, to use this app you need to download the Chrome Extension";
         this.ext = false;
@@ -68,6 +69,9 @@ export default {
         this.ctx.globalCompositeOperation = 'lighter';
         this.setup();
       }
+    },
+    install() {
+      chrome.webstore.install();
     },
     setup() {
 			var i, j, particle, x, y;
@@ -123,6 +127,11 @@ export default {
   width: 100%;
 	color: white;
 	background: #13242f;
+}
+.chr {
+  background-color:#0266C8;
+  margin-top:1em;
+  color:white;
 }
 #container {
   position: relative;
