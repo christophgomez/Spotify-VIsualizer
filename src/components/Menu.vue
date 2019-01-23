@@ -50,7 +50,7 @@ export default {
   transform: translateX(calc(300px * -1));
   color: rgba(255,255,255,1);
   background-size: 400% 400%;
-  background-color: rgb(66,185,131, .3);
+  background-color: rgba(66,185,131, .3);
   background-position: 90% 90%;
   display: flex;
   flex: 0 0 auto;

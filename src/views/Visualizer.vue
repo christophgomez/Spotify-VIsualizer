@@ -1,8 +1,6 @@
 <template>
 	<div id='visualizer'>
-		<keep-alive>
-			<canvas id='canvas'></canvas>
-		</keep-alive>
+		<canvas id='canvas'></canvas>
 	</div>
 </template>
 
@@ -21,13 +19,15 @@ export default {
 			trackDuration: 0,
 			transferred: false,
 			isPaused: false,
-			NUM_PARTICLES: 250,
+			NUM_PARTICLES: 175,
 			particles: [],
 			height: null,
 			width: null,
 			ratio: null,
 			ctx: null,
 			bands: null,
+			requestid: null,
+			canvas: HTMLElement,
 		}
 	},
 	sockets: {
@@ -63,38 +63,47 @@ export default {
 		}
 	},
 	created() {
+		console.log('Num Particles: '+this.NUM_PARTICLES+"\nParticles: "+this.particles+"\nBands: "+this.bands);
 		var self = this;
+		this.bands = null;
 		window.addEventListener("message", (event) => {
 			// We only accept messages from ourselves
 			if (event.source != window)
 				return;
 			if(event.data.type = "frequency_data")
-				self.bands = event.data.data;
+				this.bands = event.data.data;
 			if(event.data.type = "fullScreenDone")
 				this.sizeCanvas();
 		});
 	},
+	beforeDestroy() {
+		this.NUM_PARTICLES = 250;
+		this.particles = [];
+		this.bands = null;
+		this.ctx = null;
+		this.canvas = null;
+		window.cancelAnimationFrame(this.requestid);
+		window.removeEventListener("message");
+	},
 	mounted() {
+		this.canvas = document.getElementById('canvas');
 		this.sizeCanvas();
-		//this.ctx.scale(this.ratio, this.ratio);
 	},
 	methods: {
 		sizeCanvas() {
-		this.ratio = window.devicePixelRatio;
-		this.height = window.innerHeight;
-		this.width = window.innerWidth;
-		let canvas = document.getElementById('canvas');
-		//scale the canvas
-		if(canvas !== null) {
-			canvas.setAttribute('height', this.height * this.ratio);
-			canvas.setAttribute('width', this.width * this.ratio);
-			this.ctx = canvas.getContext('2d');
-			this.ctx.globalCompositeOperation = 'lighter';
-		}
+			this.ratio = window.devicePixelRatio;
+			this.height = window.innerHeight;
+			this.width = window.innerWidth;
+			//scale the canvas
+			if(this.canvas !== null && this.canvas !== undefined) {
+				this.canvas.setAttribute('height', this.height * this.ratio);
+				this.canvas.setAttribute('width', this.width * this.ratio);
+				this.ctx = this.canvas.getContext('2d');
+				this.ctx.globalCompositeOperation = 'lighter';
+			}
 		},
 		async transfer() {
-			console.log('transferring');
-			const response = await SpotifyService.transferDevicePlayer({player_id: this.playerId, access_token: localStorage.access_token, play: true});
+			const response = await SpotifyService.transferDevicePlayer({player_id: localStorage.device_id, access_token: localStorage.access_token, play: true});
 			if(response.data.success === true) {
 				this.setup();
 				this.transferred = true;
@@ -113,7 +122,7 @@ export default {
 			}
 		},
 		setup() {
-			var analyser, error, i, intro, j, particle, ref, warning, x, y;
+			var i, j, particle, x, y;
 			for (i = 0; i <= this.NUM_PARTICLES; i++) {
         		x = this.random(this.width);
         		y = this.random(this.height);
@@ -121,12 +130,12 @@ export default {
         		particle.energy = this.random(particle.band / 256);
         		this.particles.push(particle);
 			}
-			requestAnimationFrame(this.draw);
+			this.requestid = requestAnimationFrame(this.draw);
 		},
 		draw() {
 			this.ctx.clearRect(0, 0, this.width * this.ratio, this.height * this.ratio);
 			this.update();
-			requestAnimationFrame(this.draw)
+			this.requestid = requestAnimationFrame(this.draw);
 		},
 		update() {
 			let particle;
@@ -146,23 +155,16 @@ export default {
 			}
 		},
 		random (min, max = undefined) {
-
 			if (this.isArray(min))
-
 				return min[~~(Math.random() * min.length)];
-
 			if (!this.isNumber(max))
-
 				max = min || 1, min = 0;
-
 			return min + Math.random() * (max - min);
 		},
 		isArray(object) {
-
 			return Object.prototype.toString.call(object) == '[object Array]';
 		},
 		isNumber(object) {
-
 			return typeof object == 'number';
 		}
 	}

@@ -1,5 +1,19 @@
 <template>
-  <div class="">
+  <div id="auth">
+    <div v-if='success===true' class='success'>
+      <h1>Spotify Link Successful!</h1>
+      <hr>
+      <p>You can CLOSE <i>this</i> tab now and click on the Extension Icon in a <i>new</i> tab</p>
+      <p>You'll do that everytime you want to use the app from now on.</p>
+      <small>(Forget the app URL!! It won't work if you don't click that Icon. Trust me!)</small><br><br>
+      <p>Also don't try to click the Extension Icon in this tab, it just won't work and I can't make it work and I'm tired, I'll fix it later...</p>
+      <p>One more time...It's very important that you always click that Icon to use this app, I cannot stress that enough!</p>
+      <p>Still reading? Close this tab and click that Icon!</p>
+    </div>
+    <div v-if='success===false' class='fail'>
+      <h1>Uh oh!</h1>
+      <p>Something went wrong linking your Spotify Account</p><font-awesome-icon icon='frown' size="3x"/> <br><br><p>Please go back and try again</p>
+    </div>
   </div>
 </template>
 
@@ -10,15 +24,22 @@ export default {
   name: 'Auth',
   data () {
     return {
+      success: Boolean,
       code: null
     }
   },
-  created() {
-    window.onbeforeunload = function () {
+  mounted() {
+    /*window.onbeforeunload = function () {
       window.opener.checkToken();
+    }*/
+    if(this.$route.query.code) {
+      this.success = true;
+      this.code = this.$route.query.code;
+      this.exchange();
     }
-    this.code = this.$route.query.code;
-    this.exchange();
+    if(this.$route.query.error) {
+      this.success = false;
+    }
   },
   methods: {
     async exchange() {
@@ -28,31 +49,77 @@ export default {
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('refresh_token', response.data.refresh_token);
       }
-      window.close();
+    },
+    cont() {
+      this.$router.replace({name: 'visualizer'});
     }
   }
 }
 </script>
 
 <style scoped>
-.about{
-  text-overflow: hidden;
+#auth {
+  width:100%;
+  height: 100%;
+  margin: 0 auto;
+  background: #13242f;
 }
-a {
-  color: #42b983;
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em auto;
+    padding: 0;
+    width: 25%;
 }
-button {
-   background:none!important;
-     border:none; 
-     padding:0!important;
-     font: inherit;
-     color: #42b983;
-     /*border is optional*/
-     border-bottom:1px solid #42b983; 
-     cursor: pointer;
+.md-button {
+  background-color:#42b983;
+  color:black;
+  border:none;
 }
-button:focus {
-  outline: 0;
+.fail {
+  color: white;
+  width: 100%;
+  text-align:center;
+  height: 100%;
+  margin: 10% auto;
+  padding: 10px;
+  position: relative;
+}
+.success {
+  color: white;
+  width: 100%;
+  text-align:center;
+  height: 100%;
+  margin: 10% auto;
+  padding: 10px;
+  position: relative;
+}
+#auth:before {
+  background-size: 100%;
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHJhZGlhbEdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY3g9IjUwJSIgY3k9IiIgcj0iOTUlIj48c3RvcCBvZmZzZXQ9IjIwJSIgc3RvcC1jb2xvcj0iIzAwMDAwMCIgc3RvcC1vcGFjaXR5PSIwLjAiLz48c3RvcCBvZmZzZXQ9Ijk1JSIgc3RvcC1jb2xvcj0iIzAwMDAwMCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+  background-image: -moz-radial-gradient(center, ellipse cover, rgba(0, 0, 0, 0) 20%, #000000 95%);
+  background-image: -webkit-radial-gradient(center, ellipse cover, rgba(0, 0, 0, 0) 20%, #000000 95%);
+  background-image: radial-gradient(ellipse cover at center, rgba(0, 0, 0, 0) 20%, #000000 95%);
+  position: absolute;
+  content: "";
+  z-index: 0;
+  opacity: 0.9;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+}
+#auth:after {
+  	position: absolute;
+  	content: "";
+  	z-index: 0;
+  	opacity: 0.8;
+  	height: 100%;
+  	width: 100%;
+  	left: 0;
+  	top: 0;
 }
 </style>
 

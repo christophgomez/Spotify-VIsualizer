@@ -4,9 +4,7 @@
       <Hamburger class='controls' :class="{show: isShowing}" v-if='landing === false'></Hamburger>
       <router-view/>
       <div class='controls-wrapper' v-if='landing === false'>
-        <keep-alive>
-          <Controls :token='token' :artist='artist' :album='album' :track='track' :paused='paused' class='controls' :class="{show: isShowing}"></Controls>
-        </keep-alive>
+        <Controls :token='token' :artist='artist' :album='album' :track='track' :paused='paused' class='controls' :class="{show: isShowing}"></Controls>
       </div>
   </div>
 </template>
@@ -88,6 +86,7 @@ export default {
   methods: {
     initVis() {
       this.landing = false;
+      this.refreshToken();
       if(this.token === '') {
         this.getToken();
       }
@@ -275,7 +274,7 @@ body {
   overflow: hidden;
 }
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+font-family: 'Nunito', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

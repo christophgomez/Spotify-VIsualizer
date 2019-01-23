@@ -1,6 +1,5 @@
 <template>
   <div>
-		<div class="md-title">Spotify</div>
     <md-button @click='openWindow()' class="md-raised">Link Spotify Account</md-button>
     <span class="md-error" v-if="link===false"><br><br>There was an error linking your spotify account</span>
   </div>
@@ -22,25 +21,26 @@ export default {
     }
   },
   created() {
-    this.authWindow = window;
+    /*this.authWindow = window;
     var self = this;
 		this.authWindow.checkToken = function() {
 			self.getToken();
-		}
+		}*/
   },
   methods: {
-    async getToken() {
+    /*async getToken() {
       if(localStorage.access_token) {
         this.token = localStorage.access_token;
         this.$router.replace({name: 'visualizer'});
       } else {
         this.link = false;
       }
-    },
+    },*/
     async openWindow() {
       const response = await SpotifyService.link();
       var url = (response.data.redirect);
-      window.open(url, '_blank', "height=500,width=500,toolbar=no,menubar=no,scrollbars=no,location=no,status=no left=300 top=200");
+      //window.open(url, '_blank', "height=500,width=500,toolbar=no,menubar=no,scrollbars=no,location=no,status=no left=300 top=200");
+      window.location = url;
     },
   }
 };

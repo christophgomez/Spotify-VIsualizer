@@ -1,7 +1,15 @@
 /* eslint-disable */
 var background = {
 	init: () => {
+		chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+			if (message == 'version') {
+				const manifest = chrome.runtime.getManifest();
+				sendResponse({ type: 'success', version: manifest.version });
+			}
+		});
 		background.port = null;
+		background.audio = null;
+		background.leaving = false;
 		chrome.browserAction.onClicked.addListener(background.navToWebsite);
 		// chrome.runtime.onConnect.addListener(background.onConnect);
 		chrome.runtime.onMessage.addListener((msg, sender, response) => {
@@ -13,10 +21,15 @@ var background = {
 					});
 				});
 			}
-			if (msg.type === "close")
+			if (msg.type === "close") {
 				chrome.tabs.getSelected(function (tab) {
-					chrome.tabs.remove(tab.id, function () {});
+					chrome.tabs.remove(tab.id, function () { });
 				});
+			}
+			if (msg.type === "leaving") {
+				console.log('recieved leaving');
+				background.leaving = true;
+			}
 			/*if (msg.type === "term") {
 				background.stream = null;
 				background.audio.audioContext = null;
@@ -26,36 +39,74 @@ var background = {
 				background.navToWebsite();
 			}*/
 		});
+		chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+			// do something here
+			let matches = ["://localhost:8080", "://localhost:8080/visualizer"]
+			for (let i in matches) {
+				if (!tab.url.includes(matches[i]) && background.leaving === true) {
+					if (background.stream !== null) {
+						if (background.audio !== null) {
+							console.log('nulling audio');
+							background.audio.jsNode.onaudioprocess = null;
+							background.audio.jsNode = null;
+							background.audio.bands = null;
+							background.audio.audioAnalyser = null;
+							background.audio.audioStream = null;
+							background.audio.audioContext = null;
+							background.audio = null;
+						}
+						background.stream.getAudioTracks()[0].stop();
+						background.stream = null;
+					}
+				}
+			}
+		});
 	},
 	navToWebsite() {
-		chrome.tabs.update({
-			url: "http://localhost:8080"
-		});
-		background.stream = null;
+		background.leaving = false;
+		chrome.tabs.getSelected((tab) => {
+			background.tabId = tab.id
+			chrome.tabs.update(background.tabId, {
+				url: "http://localhost:8080"
+			});
 			chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
+				if (background.audio !== null) {
+					console.log('nulling audio');
+					background.audio.jsNode.onaudioprocess = null;
+					background.audio.jsNode = null;
+					background.audio.audioAnalyser = null;
+					background.audio.audioStream = null;
+					background.audio.audioContext = null;
+					background.audio = null;
+				}
 				if (chrome.runtime.lastError != undefined) {
 					error = chrome.runtime.lastError.message
 					chrome.runtime.lastError = undefined;
 					console.log(error);
 					return error;
 				}
+				if (background.stream !== null) {
+					background.stream = null;
+				}
 				background.stream = stream;
-				background.createAudio(background.stream);
+				background.createAudio(stream);
 			});
+		});
 	},
 	createAudio(stream) {
 		background.audio = new AudioObject(stream);
 		background.audio.jsNode.onaudioprocess = () => {
 			// retreive the data from the first channel
 			background.audio.audioAnalyser.getByteFrequencyData(background.audio.bands);
-			chrome.tabs.query({
-				active: true,
-				currentWindow: true
-			}, function (tabs) {
-				chrome.tabs.sendMessage(tabs[0].id, {
-					type: "frequency_data",
-					frequency_data: background.audio.bands
-				});
+			chrome.tabs.query( { active: true, currentWindow: true }, (tabs) => {
+				if (background.audio !== null) {
+					if (background.audio.bands !== null) {
+						chrome.tabs.sendMessage(background.tabId, {
+							type: "frequency_data",
+							frequency_data: background.audio.bands
+						});
+					}
+				}
 			});
 		};
 	},

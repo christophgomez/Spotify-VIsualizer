@@ -40,7 +40,7 @@ module.exports = function (app, io) {
 	/***********************************ROUTES**********************************************/
 
 	spotifyRoute.route('/link').get((req, res) => {
-		var scopes = 'playlist-read-private playlist-modify-public playlist-modify-private playlist-read-collaborative user-read-private user-read-birthdate user-read-email user-read-playback-state user-read-currently-playing user-modify-playback-state app-remote-control streaming user-top-read user-read-recently-played user-library-read user-library-modify';
+		var scopes = 'playlist-read-private playlist-read-collaborative user-read-private user-read-birthdate user-read-email user-read-playback-state user-read-currently-playing user-modify-playback-state app-remote-control streaming user-top-read user-read-recently-played user-library-read';
 
 		return res.status(200).send({
 			success: true,

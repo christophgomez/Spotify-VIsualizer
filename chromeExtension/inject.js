@@ -1,13 +1,15 @@
 /* eslint-disable */
 var inject = {
 	init: () => {
+		inject.frequency_data = null;
 		inject.connect();
 	},
 	connect: () => {
 		// inject.port = chrome.runtime.connect({name: "contentScript"});
 		chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-			if(msg.type === 'frequency_data') {
-				inject.transfer(msg.frequency_data)
+			if (msg.type === 'frequency_data') {
+				inject.frequency_data = msg.frequency_data;
+				inject.transfer(inject.frequency_data)
 			}
 		});
 		window.addEventListener("message", (event) => {
@@ -24,6 +26,14 @@ var inject = {
 			if (event.data.type === "term")
 				chrome.runtime.sendMessage({ type: "term" });*/
 		});
+		window.onbeforeunload = () => {
+			chrome.runtime.sendMessage({
+				type: 'leaving'
+			});
+			chrome.runtime.onMessage.removeListener(() => {
+				window.removeEventListener("message");
+			});
+		}
 	},
 	transfer: (frequency_data) => {
 		var data = {
