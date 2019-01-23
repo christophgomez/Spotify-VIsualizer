@@ -5,7 +5,10 @@ const cors = require('cors');
 const morgan = require('morgan');
 const serveStatic = require('serve-static')
 const path = require('path')
-var config = require('./config/settings');
+var config;
+if (process.env.NODE_ENV !== 'production') {
+	config = require('../config/settings');
+}
 //var history = require('connect-history-api-fallback');
 
 // Set up the app
