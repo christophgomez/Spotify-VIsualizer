@@ -4,8 +4,15 @@ var config;
 if (process.env.NODE_ENV !== 'production') {
 	config = require('../config/settings');
 }
-const baseURL = config.baseURL || "spotilize.herokuapp.com";
-const port = config.serverPort || "";
+var baseURL;
+var port;
+if (config === undefined) {
+	baseURL = "spotilize.herokuapp.com";
+	port = "";
+} else {
+	baseURL = config.baseURL;
+	port = config.serverPort;
+}
 export default () => {
 	return axios.create({
 		baseURL: baseURL+port+'/spotify',
