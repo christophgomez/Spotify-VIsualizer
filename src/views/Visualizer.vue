@@ -86,6 +86,7 @@ export default {
 		window.removeEventListener("message");
 	},
 	mounted() {
+		window.location.reload(true);
 		this.canvas = document.getElementById('canvas');
 		this.sizeCanvas();
 	},

@@ -3,6 +3,7 @@ var inject = {
 	init: () => {
 		inject.frequency_data = null;
 		inject.connect();
+		inject.id = Math.random() * 100;
 	},
 	connect: () => {
 		// inject.port = chrome.runtime.connect({name: "contentScript"});
@@ -30,6 +31,7 @@ var inject = {
 			chrome.runtime.sendMessage({
 				type: 'leaving'
 			});
+			inject.frequency_data = null;
 			chrome.runtime.onMessage.removeListener(() => {
 				window.removeEventListener("message");
 			});

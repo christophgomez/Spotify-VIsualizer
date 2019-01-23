@@ -40,28 +40,6 @@ var background = {
 				background.navToWebsite();
 			}*/
 		});
-		chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-			// do something here
-			let matches = ["https://spotilize.herokuapp.com", "https://spotilize.herokuapp.com/visualizer"]
-			for (let i in matches) {
-				if (!tab.url.includes(matches[i]) && background.leaving === true) {
-					if (background.stream !== null) {
-						if (background.audio !== null) {
-							console.log('nulling audio');
-							background.audio.jsNode.onaudioprocess = null;
-							background.audio.jsNode = null;
-							background.audio.bands = null;
-							background.audio.audioAnalyser = null;
-							background.audio.audioStream = null;
-							background.audio.audioContext = null;
-							background.audio = null;
-						}
-						background.stream.getAudioTracks()[0].stop();
-						background.stream = null;
-					}
-				}
-			}
-		});
 	},
 	navToWebsite() {
 		background.leaving = false;
@@ -90,6 +68,29 @@ var background = {
 					background.stream = null;
 				}
 				background.stream = stream;
+				chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+					// do something here
+					let matches = ["https://spotilize.herokuapp.com", "https://spotilize.herokuapp.com/visualizer"]
+					for (let i in matches) {
+						if (!tab.url.includes(matches[i]) && background.leaving === true) {
+							if (background.stream !== null) {
+								if (background.audio !== null) {
+									background.audio.jsNode.onaudioprocess = null;
+									background.audio.jsNode = null;
+									background.audio.bands = null;
+									background.audio.audioAnalyser = null;
+									background.audio.audioStream = null;
+									background.audio.audioContext = null;
+									background.audio = null;
+								}
+								stream = null;
+								background.stream.getAudioTracks()[0].stop();
+								background.stream = null;
+								chrome.tabs.remove(tabId);
+							}
+						}
+					}
+				});
 				background.createAudio(stream);
 			});
 		});
