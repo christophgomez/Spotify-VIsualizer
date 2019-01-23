@@ -9,7 +9,7 @@
           <Link/>
         </div>
         <div v-else>
-          <md-button class="md-raised chr">Add to Chrome</md-button>
+          <md-button class="md-raised chr" @click='install()'>Add to Chrome</md-button>
         </div>
         <footer>A Spotify visualizer made with <font-awesome-icon icon=heart style='color:red' /> by Christopher Gomez</footer>
       </div>
@@ -42,7 +42,7 @@ export default {
   mounted() {
     chrome.runtime.sendMessage('jidcihllhnmbjbnoijfepopdpkpgeobe', 'version', (response) => {
       if(!response) {
-        document.getElementById('extCheck').innerHTML = "Whoops, to use this app you need to download the Chrome Extension";
+        document.getElementById('extCheck').innerHTML = "<p>Whoops, to use this app you need to download the Chrome Extension</p>";
         this.ext = false;
       } else if(response.version) {
         document.getElementById('extCheck').innerHTML = "<p style='font-size:1.3em'>Link your Spotify Account to begin using Spotilize</p>"
@@ -75,7 +75,7 @@ export default {
       }
     },
     install() {
-      chrome.webstore.install();
+      chrome.webstore.install('https://chrome.google.com/webstore/detail/spotilize/jidcihllhnmbjbnoijfepopdpkpgeobe');
     },
     setup() {
 			var i, j, particle, x, y;
