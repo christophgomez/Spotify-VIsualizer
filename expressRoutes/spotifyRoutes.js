@@ -11,7 +11,12 @@ module.exports = function (app, io) {
 	var spotifyRoute = express.Router();
 	const my_client_id = process.env.spotifyClientId || config.spotifyClientId;
 	const my_client_secret = process.env.spotifyClientSecret || config.spotifyClientSecret;
-	const port = config.serverPort || "";
+	var port;
+	if (config !== undefined) {
+		port = config.serverPort;
+	} else {
+		port = "";
+	}
 	const baseURL = process.env.baseURL || config.baseURL;
 	const redirect_uri = baseURL+ port + "/success";
 
