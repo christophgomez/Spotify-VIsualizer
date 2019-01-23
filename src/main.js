@@ -37,8 +37,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import VueWait from 'vue-wait'
 Vue.use(VueWait);
-const baseURL = process.env.baseURL || config.baseURL;
-const port = process.env.PORT || config.serverPort;
+const baseURL = config.baseURL || "spotilize.herokuapp.com/spotify";
+const port = config.serverPort || "";
 Vue.use(new VueSocketIO({
   connection: baseURL + port,
 }));
