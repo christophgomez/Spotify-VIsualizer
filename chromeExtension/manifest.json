@@ -9,7 +9,7 @@
 	],
 	"content_scripts":[
 		{
-			"matches": ["http://localhost:8080/*"],
+			"matches": ["http://localhost:8081/*"],
 			"js": ["inject.js"]
 		}
 	],
@@ -23,7 +23,7 @@
 		"default_popup": ""
 	},
 	"externally_connectable": {
-		"matches": ["http://localhost:8080/*"]
+		"matches": ["http://localhost:8081/*"]
 	},
 	"background": {
 		"scripts": ["background.js"],

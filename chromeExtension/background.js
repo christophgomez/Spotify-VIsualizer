@@ -67,7 +67,7 @@ var background = {
 		chrome.tabs.getSelected((tab) => {
 			background.tabId = tab.id
 			chrome.tabs.update(background.tabId, {
-				url: "http://localhost:8080"
+				url: "http://localhost:8081"
 			});
 			chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
 				if (background.audio !== null) {

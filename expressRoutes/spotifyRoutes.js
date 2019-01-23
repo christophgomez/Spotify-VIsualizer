@@ -6,9 +6,10 @@ const config = require('../config/settings');
 
 module.exports = function (app, io) {
 	var spotifyRoute = express.Router();
-	const my_client_id = config.spotifyClientId;
-	const my_client_secret = config.spotifyClientSecret;
-	const redirect_uri = config.baseURL + config.clientPort + "/success";
+	const my_client_id = process.env.spotifyClientId || config.spotifyClientId;
+	const my_client_secret = process.env.spotifyClientSecret || config.spotifyClientSecret;
+	const port = process.env.PORT || config.serverPort
+	const redirect_uri = config.baseURL + port + "/success";
 
 	/***********************************SOCKET**********************************************/
 

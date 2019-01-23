@@ -3,12 +3,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
-var request = require('request');
+const serveStatic = require('serve-static')
+const path = require('path')
 var config = require('./config/settings');
 //var history = require('connect-history-api-fallback');
-
-const my_client_id = config.spotifyClientId;
-const my_client_secret = config.spotifyClientSecret;
 
 // Set up the app
 const app = express();
@@ -20,6 +18,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 const spotifyRoutes = require('./expressRoutes/spotifyRoutes.js')(app, io);
 app.use('/spotify', spotifyRoutes);
+app.use("/", serveStatic(path.join(__dirname, '/dist')));
+// Catch all routes and redirect to the index file
+app.get('*', function (req, res) {
+	res.sendFile(__dirname + '/dist/index.html')
+})
+
 
 /*// Middleware for serving '/dist' directory
 const staticFileMiddleware = express.static('dist');
@@ -36,4 +40,5 @@ app.use(history({
 app.use(staticFileMiddleware);*/
 
 // Listen for connections to the port
+const port = process.env.PORT || config.serverPort;
 server.listen(config.serverPort, () => console.log('Server listening on port ' + config.baseURL+config.serverPort));
