@@ -2,7 +2,7 @@
 import axios from 'axios';
 var config;
 if (process.env.NODE_ENV !== 'production') {
-	config = require('../config/settings');
+	config = require('../../config/settings');
 }
 var baseURL;
 var port;

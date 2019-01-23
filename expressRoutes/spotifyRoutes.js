@@ -13,7 +13,7 @@ module.exports = function (app, io) {
 	const my_client_secret = process.env.spotifyClientSecret || config.spotifyClientSecret;
 	var port;
 	if (config !== undefined) {
-		port = config.serverPort;
+		port = config.clientPort;
 	} else {
 		port = "";
 	}

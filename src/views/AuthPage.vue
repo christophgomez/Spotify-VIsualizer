@@ -3,15 +3,14 @@
     <div v-if='success===true' class='success'>
       <h1>Spotify Link Successful!</h1>
       <hr>
-      <p>You can CLOSE <i>this</i> tab now and click on the Extension Icon in a <i>new</i> tab</p>
+      <p>Click the Spotilize Chrome Extension button in the browser toolbar now!</p>
       <p>You'll do that everytime you want to use the app from now on.</p>
-      <small>(Forget the app URL!! It won't work if you don't click that Icon. Trust me!)</small><br><br>
-      <p>Also don't try to click the Extension Icon in this tab, it just won't work and I can't make it work and I'm tired, I'll fix it later...</p>
-      <p>One more time...It's very important that you always click that Icon to use this app, I cannot stress that enough!</p>
-      <p>Still reading? Close this tab and click that Icon!</p>
+      <small>(Forget the app URL!! It won't work if you don't click that button. Trust me!)</small><br><br>
+      <p>Still reading? Click that button!</p>
     </div>
     <div v-if='success===false' class='fail'>
       <h1>Uh oh!</h1>
+      <hr>
       <p>Something went wrong linking your Spotify Account</p><font-awesome-icon icon='frown' size="3x"/> <br><br><p>Please go back and try again</p>
     </div>
   </div>
@@ -33,7 +32,6 @@ export default {
       window.opener.checkToken();
     }*/
     if(this.$route.query.code) {
-      this.success = true;
       this.code = this.$route.query.code;
       this.exchange();
     }
@@ -46,8 +44,11 @@ export default {
       var code = this.code;
       const response = await SpotifyService.exchange({code});
       if(response.data.success === true) {
+        this.success = true;
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('refresh_token', response.data.refresh_token);
+      } else {
+        this.success = false;
       }
     },
     cont() {

@@ -6,7 +6,7 @@
         <h1>Spotilize</h1><hr>
         <div id='extCheck'></div>
         <Link v-if='ext===true'/>
-        <footer>A Spotify Visualizer made with <font-awesome-icon icon=heart style='color:red' /> by Christopher Gomez</footer>
+        <footer>A Spotify visualizer made with <font-awesome-icon icon=heart style='color:red' /> by Christopher Gomez</footer>
       </div>
     </div>
   </div>

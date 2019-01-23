@@ -31,7 +31,8 @@ import {
   faCompressArrowsAlt,
   faHeart,
   faHandPointDown,
-  faFrown
+  faFrown,
+  faLevelUpAlt
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -69,6 +70,7 @@ library.add(faCompressArrowsAlt);
 library.add(faHeart);
 library.add(faFrown);
 library.add(faHandPointDown);
+library.add(faLevelUpAlt);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 

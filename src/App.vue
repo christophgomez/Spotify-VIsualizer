@@ -39,6 +39,7 @@ export default {
       refreshIntervalSet: false,
       refreshInterval: 0,
       mouseMoveSet: false,
+      menu: false,
       isShowing: true,
       timedelay: 1,
       _delay: 0,
@@ -48,7 +49,6 @@ export default {
   created() {
     this.$wait.start('loading');
     if(localStorage.access_token) {
-      this.initVis();
       this.$router.replace({name: 'visualizer'});
     }
   },
@@ -230,12 +230,20 @@ export default {
       clearInterval(this._delay);
       this._delay = setInterval(this.delayCheck, 500);
     },
+    toggleMenu(){ 
+      console.log('menu toggled');
+      if(this.menu === false) {
+        this.menu = true;
+      } else {
+        this.menu = false;
+      }
+    },
     delayCheck() {
-      if(this.paused === true) {
+      if(this.paused === true || this.menu === true) {
         this.isShowing = true;
         return;
       }
-      if(this.timedelay === 4) {
+      if(this.timedelay === 6) {
         this.isShowing = false;
         this.timedelay = 1;
       }

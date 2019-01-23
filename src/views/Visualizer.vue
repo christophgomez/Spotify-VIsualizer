@@ -1,6 +1,6 @@
 <template>
 	<div id='visualizer'>
-		<canvas id='canvas'></canvas>
+		<canvas id='canvas1'></canvas>
 	</div>
 </template>
 
@@ -77,7 +77,7 @@ export default {
 		});
 	},
 	beforeDestroy() {
-		this.NUM_PARTICLES = 250;
+		this.NUM_PARTICLES = 175;
 		this.particles = [];
 		this.bands = null;
 		this.ctx = null;
@@ -86,9 +86,17 @@ export default {
 		window.removeEventListener("message");
 	},
 	mounted() {
-		window.location.reload(true);
-		this.canvas = document.getElementById('canvas');
+		this.canvas = document.getElementById('canvas1');
 		this.sizeCanvas();
+		window.addEventListener('beforeunload', () => {
+			this.NUM_PARTICLES = 150;
+			this.particles = [];
+			this.bands = null;
+			this.ctx = null;
+			this.canvas = null;
+			window.cancelAnimationFrame(this.requestid);
+			window.removeEventListener("message");
+		})
 	},
 	methods: {
 		sizeCanvas() {
@@ -124,7 +132,7 @@ export default {
 		},
 		setup() {
 			var i, j, particle, x, y;
-			for (i = 0; i <= this.NUM_PARTICLES; i++) {
+			for (i = 0; i <= this.NUM_PARTICLES - 1; i++) {
         		x = this.random(this.width);
         		y = this.random(this.height);
         		particle = new Particle(x, y);

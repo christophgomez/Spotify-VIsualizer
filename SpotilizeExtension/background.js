@@ -12,7 +12,6 @@ var background = {
 		background.audio = null;
 		background.leaving = false;
 		chrome.browserAction.onClicked.addListener(background.navToWebsite);
-		// chrome.runtime.onConnect.addListener(background.onConnect);
 		chrome.runtime.onMessage.addListener((msg, sender, response) => {
 			if (msg.type === "fs") {
 				chrome.windows.getCurrent((window) => {
@@ -28,71 +27,70 @@ var background = {
 				});
 			}
 			if (msg.type === "leaving") {
-				console.log('recieved leaving');
 				background.leaving = true;
 			}
-			/*if (msg.type === "term") {
-				background.stream = null;
-				background.audio.audioContext = null;
-				background.audio = null;
-			}
-			if (msg.type === "init") {
-				background.navToWebsite();
-			}*/
 		});
+	},
+	destroy() {
+		if (background.audio !== null) {
+			background.audio.audioStream.disconnect();
+			background.audio.jsNode.disconnect();
+			background.audio.jsNode.onaudioprocess = null;
+			background.audio.jsNode = null;
+			background.audio.bands = null;
+			background.audio.audioAnalyser = null;
+			background.audio.audioStream = null;
+			background.audio.audioContext = null;
+			background.audio = null;
+		}
+		if (chrome.runtime.lastError != undefined) {
+			error = chrome.runtime.lastError.message
+			chrome.runtime.lastError = undefined;
+			console.log(error);
+			return error;
+		}
+		if (background.stream !== null) {
+			background.stream.getAudioTracks()[0].stop();
+			background.stream = null;
+		}
 	},
 	navToWebsite() {
 		background.leaving = false;
 		chrome.tabs.getSelected((tab) => {
 			background.tabId = tab.id
-			chrome.tabs.update(background.tabId, {
-				url: "https://spotilize.herokuapp.com/"
-			});
-			chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
-				if (background.audio !== null) {
-					console.log('nulling audio');
-					background.audio.jsNode.onaudioprocess = null;
-					background.audio.jsNode = null;
-					background.audio.audioAnalyser = null;
-					background.audio.audioStream = null;
-					background.audio.audioContext = null;
-					background.audio = null;
+			let matches = ["https://spotilize.herokuapp.com/visualizer", 'http://localhost:8080/visualizer'];
+			let onsite = false;
+			for (let j in matches) {
+				if (tab.url === matches[j]) {
+					onsite = true;
 				}
-				if (chrome.runtime.lastError != undefined) {
-					error = chrome.runtime.lastError.message
-					chrome.runtime.lastError = undefined;
-					console.log(error);
-					return error;
-				}
-				if (background.stream !== null) {
-					background.stream = null;
-				}
-				background.stream = stream;
-				chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-					// do something here
-					let matches = ["https://spotilize.herokuapp.com", "https://spotilize.herokuapp.com/visualizer"]
-					for (let i in matches) {
-						if (!tab.url.includes(matches[i]) && background.leaving === true) {
-							if (background.stream !== null) {
-								if (background.audio !== null) {
-									background.audio.jsNode.onaudioprocess = null;
-									background.audio.jsNode = null;
-									background.audio.bands = null;
-									background.audio.audioAnalyser = null;
-									background.audio.audioStream = null;
-									background.audio.audioContext = null;
-									background.audio = null;
-								}
-								stream = null;
-								background.stream.getAudioTracks()[0].stop();
-								background.stream = null;
-								chrome.tabs.remove(tabId);
-							}
-						}
-					}
+			}
+			if (onsite === false) {
+				chrome.tabs.update(background.tabId, {
+					url: "http://localhost:8080/"
 				});
-				background.createAudio(stream);
+			}
+			background.startCap();
+			chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+				// do something here
+				let matches2 = ["https://spotilize.herokuapp.com", "https://spotilize.herokuapp.com/visualizer", 'http://localhost:8080', 'http://localhost:8080/visualizer']
+				let ons = false;
+				for (let i in matches2) {
+					if (tab.url.includes(matches2[i])) {
+						ons = true;
+					}
+				}
+				if (ons === false && background.leaving === true) {
+					background.destroy();
+				}
 			});
+		});
+	},
+	startCap() {
+		background.destroy();
+		chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
+			background.stream = stream;
+			background.createAudio(stream);
 		});
 	},
 	createAudio(stream) {

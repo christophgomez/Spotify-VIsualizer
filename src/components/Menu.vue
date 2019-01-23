@@ -8,7 +8,7 @@
   		</label>
 		<aside class="sidebar">
       <div class='sidebar-content'>
-        <h3>Spotify Visualizer</h3>
+        <h3>Spotilize</h3>
         <span class="sidebar_line"></span>
         <br>
         <b-btn :variant="'link'">Music</b-btn>
@@ -28,10 +28,11 @@ export default {
     logout() {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
-      var data = {
+      this.$router.replace({name: 'home'});
+     /*var data = {
 				type: "close",
 			}
-      window.postMessage(data, "*");
+      window.postMessage(data, "*");*/
     }
   }
 }
