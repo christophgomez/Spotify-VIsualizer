@@ -13,6 +13,7 @@ if (config === undefined) {
 	baseURL = config.baseURL;
 	port = config.serverPort;
 }
+var url = baseURL + port + "/spotify";
 export default () => {
 	return axios.create({
 		baseURL: baseURL+port+'/spotify',
