@@ -42,7 +42,7 @@ export default {
   mounted() {
     chrome.runtime.sendMessage('jidcihllhnmbjbnoijfepopdpkpgeobe', 'version', (response) => {
       if(!response) {
-        document.getElementById('extCheck').innerHTML = "<p>Whoops, to use this app you need to download the Chrome Extension</p>";
+        document.getElementById('extCheck').innerHTML = "<p>To use this app you need to download the Chrome Extension first</p>";
         this.ext = false;
       } else if(response.version) {
         document.getElementById('extCheck').innerHTML = "<p style='font-size:1.3em'>Link your Spotify Account to begin using Spotilize</p>"
