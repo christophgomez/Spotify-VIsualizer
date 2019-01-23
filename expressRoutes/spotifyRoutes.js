@@ -2,7 +2,10 @@
 const express = require('express');
 var request = require('request');
 var rp = require('request-promise-native');
-const config = require('../config/settings');
+var config;
+if (process.env.NODE_ENV !== 'production') {
+	config = require('../config/settings');
+}
 
 module.exports = function (app, io) {
 	var spotifyRoute = express.Router();
