@@ -41,4 +41,4 @@ app.use(staticFileMiddleware);*/
 
 // Listen for connections to the port
 const port = process.env.PORT || config.serverPort;
-server.listen(config.serverPort, () => console.log('Server listening on port ' + config.baseURL+config.serverPort));
+server.listen(port, () => console.log('Server listening on port ' + config.baseURL+config.serverPort));
