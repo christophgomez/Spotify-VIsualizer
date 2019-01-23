@@ -1,7 +1,10 @@
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
-const config = require('../config/settings');
+var config;
+if (process.env.NODE_ENV !== 'production') {
+  config = require('../config/settings');
+}
 
 import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.min.css';
