@@ -34,9 +34,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import VueWait from 'vue-wait'
 Vue.use(VueWait);
-
+const baseURL = process.env.baseURL || config.baseURL;
+const port = process.env.PORT || config.serverPort;
 Vue.use(new VueSocketIO({
-  connection: config.baseURL+config.serverPort,
+  connection: baseURL + port,
 }));
 
 import Notifications from 'vue-notification'
