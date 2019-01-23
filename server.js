@@ -24,7 +24,7 @@ app.use('/spotify', spotifyRoutes);
 app.use("/", serveStatic(path.join(__dirname, '/dist')));
 // Catch all routes and redirect to the index file
 app.get('*', function (req, res) {
-	res.sendFile(__dirname + './dist/index.html')
+	res.sendFile(__dirname + '/dist/index.html')
 })
 
 
