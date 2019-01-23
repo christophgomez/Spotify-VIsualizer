@@ -7,6 +7,7 @@ var background = {
 				sendResponse({ type: 'success', version: manifest.version });
 			}
 		});
+		background.stream = null;
 		background.port = null;
 		background.audio = null;
 		background.leaving = false;

@@ -39,8 +39,7 @@ export default {
       if(!response) {
         document.getElementById('extCheck').innerHTML = "Whoops, to use this app you need to download the Chrome Extension";
         this.ext = false;
-      }
-      if(response.version) {
+      } else if(response.version) {
         document.getElementById('extCheck').innerHTML = "<p style='font-size:1.3em'>Link your Spotify Account to begin using Spotilize</p>"
         this.ext = true;
       }
@@ -92,7 +91,6 @@ export default {
 				particle = this.particles[j];
         // recycle particles
         if (particle.y < -particle.size * particle.level * particle.scale) {
-          console.log('resetting particle');
          	//particle.reset();
           particle.x = this.random(this.width);
 					particle.y = this.height + (particle.size * particle.scale * particle.level);

@@ -7,7 +7,7 @@ const serveStatic = require('serve-static')
 const path = require('path')
 var config;
 if (process.env.NODE_ENV !== 'production') {
-	config = require('../config/settings');
+	config = require('./config/settings');
 }
 //var history = require('connect-history-api-fallback');
 
