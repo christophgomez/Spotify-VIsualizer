@@ -12,7 +12,8 @@ module.exports = function (app, io) {
 	const my_client_id = process.env.spotifyClientId || config.spotifyClientId;
 	const my_client_secret = process.env.spotifyClientSecret || config.spotifyClientSecret;
 	const port = process.env.PORT || config.serverPort
-	const redirect_uri = config.baseURL + port + "/success";
+	const baseURL = process.env.baseURL || config.baseURL;
+	const redirect_uri = baseURL+ port + "/success";
 
 	/***********************************SOCKET**********************************************/
 
