@@ -41,7 +41,7 @@ var background = {
 		});
 		chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 			// do something here
-			let matches = ["://localhost:8080", "://localhost:8080/visualizer"]
+			let matches = ["https://spotilize.herokuapp.com", "https://spotilize.herokuapp.com/visualizer"]
 			for (let i in matches) {
 				if (!tab.url.includes(matches[i]) && background.leaving === true) {
 					if (background.stream !== null) {
@@ -67,7 +67,7 @@ var background = {
 		chrome.tabs.getSelected((tab) => {
 			background.tabId = tab.id
 			chrome.tabs.update(background.tabId, {
-				url: "http://localhost:8081"
+				url: "https://spotilize.herokuapp.com/"
 			});
 			chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
 				if (background.audio !== null) {

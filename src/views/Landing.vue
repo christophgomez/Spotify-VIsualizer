@@ -35,7 +35,7 @@ export default {
     }
   },
   mounted() {
-    chrome.runtime.sendMessage('mjccocghohpconpenghflpedjjkcdikb', 'version', (response) => {
+    chrome.runtime.sendMessage('dkbaigmmfcnefccifbpbcmgnonenapch', 'version', (response) => {
       if(!response) {
         document.getElementById('extCheck').innerHTML = "Whoops, to use this app you need to download the Chrome Extension";
         this.ext = false;

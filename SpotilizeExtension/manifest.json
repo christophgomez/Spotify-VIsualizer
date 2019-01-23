@@ -1,5 +1,5 @@
 {
-	"name" : "VueVisualizer",
+	"name" : "Spotilize",
 	"version": "0.0.1",
 	"description": "Chrome Extension to capture Spotify Audio and analyze the frequency data for a visualizer",
 	"permissions": [
@@ -9,7 +9,7 @@
 	],
 	"content_scripts":[
 		{
-			"matches": ["http://localhost:8081/*"],
+			"matches": ["https://spotilize.herokuapp.com/*"],
 			"js": ["inject.js"]
 		}
 	],
@@ -19,11 +19,11 @@
 			"24": "images/icon24.png",
 			"32": "images/icon32.png" 
 		},
-		"default_title": "Vue Visualizer", 
+		"default_title": "Spotilize", 
 		"default_popup": ""
 	},
 	"externally_connectable": {
-		"matches": ["http://localhost:8081/*"]
+		"matches": ["https://spotilize.herokuapp.com/*"]
 	},
 	"background": {
 		"scripts": ["background.js"],
