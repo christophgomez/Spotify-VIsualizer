@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 const spotifyRoutes = require('./expressRoutes/spotifyRoutes.js')(app, io);
 app.use('/spotify', spotifyRoutes);
-app.use("/", serveStatic(path.join(__dirname, '/dist')));
+app.use("/", serveStatic(path.join(__dirname, './dist')));
 // Catch all routes and redirect to the index file
 app.get('*', function (req, res) {
 	res.sendFile(__dirname + '/dist/index.html')
