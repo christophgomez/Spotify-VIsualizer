@@ -11,11 +11,28 @@
         <h3>Spotilize</h3>
         <span class="sidebar_line"></span>
         <br>
-        <b-btn :variant="'link'">Music</b-btn>
-        <b-btn :variant="'link'">Visualizations</b-btn>
-        <b-btn :variant="'link'">Settings</b-btn>
-        <b-btn :variant="'link'">About</b-btn>
-    		<b-btn :variant="'link'" @click='logout()'>Logout</b-btn>
+        <ul>
+          <li>
+            <b-btn :variant="'link'" @click="toggle('music')">Music</b-btn>
+            <ul class='submenu' :class='{show: music}'>
+              <li>Coming Soon</li>
+            </ul>
+          </li>
+          <li>
+            <b-btn :variant="'link'" @click="toggle('visualizations')">Visualizations</b-btn>
+            <ul class='submenu' :class='{show: visualizations}'>
+              <li>Coming Soon</li>
+            </ul>
+          </li>
+          <li>
+            <b-btn :variant="'link'" @click="toggle('settings')">Settings</b-btn>
+            <ul class='submenu' :class='{show: settings}'>
+              <li>Coming Soon</li>
+            </ul>
+          </li>
+          <li><b-btn :variant="'link'">About</b-btn></li>
+    		  <li><b-btn :variant="'link'" @click='logout()'>Logout</b-btn></li>
+        </ul>
       </div>
 		</aside>
 	</div>
@@ -24,6 +41,13 @@
 <script>
 export default {
   name: 'Menu',
+  data() {
+    return {
+      music: false,
+      visualizations: false,
+      settings: false,
+    }
+  },
   methods: {
     logout() {
       localStorage.removeItem('access_token');
@@ -33,19 +57,65 @@ export default {
 				type: "close",
 			}
       window.postMessage(data, "*");*/
+    },
+    toggleAllFalseExcept(type) {
+      switch(type){
+        case 'music':
+          this.visualizations = false;
+          this.settings = false;
+          break;
+        case 'visualizations':
+          this.music = false;
+          this.settings = false;
+          break;
+        case 'settings':
+          this.visualizations = false;
+          this.music = false;
+      }
+    },
+    toggle(type) {
+      switch(type) {
+        case 'music':
+          this.toggleAllFalseExcept('music');
+          if(this.music === true) {
+            this.music = false;
+          } else {
+            this.music = true;
+          }
+          break;
+        case 'visualizations':
+          this.toggleAllFalseExcept('visualizations');
+          if(this.visualizations === true) {
+            this.visualizations = false;
+          } else {
+            this.visualizations = true;
+          }
+          break;
+        case 'settings':
+          this.toggleAllFalseExcept('settings');
+          if(this.settings === true) {
+            this.settings = false;
+          } else {
+            this.settings = true;
+          }
+          break;
+      }
     }
   }
 }
 </script>
 
 <style scoped>
+
 :root {
   --sidebar-width: 300px;
   --toggler-size: 35px;
 }
+
 .sidebar-content {
   margin-top:5em;
 }
+
 .sidebar {
   width: 300px;
   transform: translateX(calc(300px * -1));
@@ -65,9 +135,31 @@ export default {
   bottom: 0;
   transition: transform .6s, background-position 1s .6s;
   overflow-x: hidden;
+  line-height: .6rem;
 }
 
-
+ul {
+  padding: 0;
+  list-style-type: none;
+}
+.submenu {
+  display:none;
+  opacity: 0;
+  animation: fadeOut .5s;
+}
+.show {
+  opacity: 1;
+  display:inherit;
+  animation: fadeIn 1s;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+      to { opacity: 1; }
+}  
+@-prefix-keyframes fadeOut {
+    from { opacity: 1; }
+      to { opacity: 0; }
+}
 button {
   display:block;
   color:white;
@@ -82,9 +174,11 @@ button {
 button:hover {
   color: white;
 }
+
 #logout {
   bottom: 1em;
 }
+
 .input-toggler:checked ~ .sidebar {
   transform: translateX(0);
   background-position: 0 0;
@@ -100,6 +194,7 @@ button:hover {
   cursor: pointer;
   z-index: 1;
 }
+
 .sidebar_line {
   height: 1px;
   background: white;
@@ -107,6 +202,7 @@ button:hover {
   left: 5px;
   right: 5px;
 }
+
 .menu-toggler__line {
   height: calc(35px / 5);
   background: white;

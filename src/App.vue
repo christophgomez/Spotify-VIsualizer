@@ -49,7 +49,17 @@ export default {
   created() {
     this.$wait.start('loading');
     if(localStorage.access_token) {
-      this.$router.replace({name: 'visualizer'});
+      if(chrome.runtime){
+        chrome.runtime.sendMessage('jidcihllhnmbjbnoijfepopdpkpgeobe', 'version', (response) => {
+          if(!response) {
+            this.$router.replace({name: 'home'});
+          } else if(response.version) {
+            this.$router.replace({name: 'visualizer'});
+          }
+        });
+      } else {
+        this.$router.replace({name: 'home'});
+      }
     }
   },
   mounted() {

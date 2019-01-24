@@ -1,16 +1,20 @@
 /* eslint-disable */
 var background = {
 	init: () => {
-		chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-			if (message == 'version') {
-				const manifest = chrome.runtime.getManifest();
-				sendResponse({ type: 'success', version: manifest.version });
-			}
-		});
+		background.listening = false;
 		background.stream = null;
 		background.port = null;
 		background.audio = null;
 		background.leaving = false;
+		chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+			if (message === 'version') {
+				const manifest = chrome.runtime.getManifest();
+				sendResponse({ type: 'success', version: manifest.version });
+			}
+			if (message === 'listening') {
+				sendResponse({ listening: background.listening });
+			}
+		});
 		chrome.browserAction.onClicked.addListener(background.navToWebsite);
 		chrome.runtime.onMessage.addListener((msg, sender, response) => {
 			if (msg.type === "fs") {
@@ -53,6 +57,7 @@ var background = {
 			background.stream.getAudioTracks()[0].stop();
 			background.stream = null;
 		}
+		background.listening = false;
 	},
 	navToWebsite() {
 		background.leaving = false;
@@ -82,6 +87,7 @@ var background = {
 				}
 				if (ons === false && background.leaving === true) {
 					background.destroy();
+					background.listening = false;
 				}
 			});
 		});
@@ -91,6 +97,7 @@ var background = {
 		chrome.tabCapture.capture({ audio: true, video: false }, (stream) => {
 			background.stream = stream;
 			background.createAudio(stream);
+			background.listening = true;
 		});
 	},
 	createAudio(stream) {

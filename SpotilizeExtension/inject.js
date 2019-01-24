@@ -1,7 +1,6 @@
 /* eslint-disable */
 var inject = {
 	init: () => {
-		console.log('frequency data: ' + inject.frequency_data);
 		inject.frequency_data = null;
 		inject.connect();
 	},

@@ -1,6 +1,9 @@
 <template>
 	<div id='visualizer'>
 		<canvas id='canvas1'></canvas>
+		<b-modal ref="myModalRef" ok-only style='color:black;text-align:center' title='Whoops...'>
+			<p>Click the Spotilize extension button in the Chrome toolbar to start the visualizer!</p>
+		</b-modal>
 	</div>
 </template>
 
@@ -63,8 +66,13 @@ export default {
 		}
 	},
 	created() {
-		console.log('Num Particles: '+this.NUM_PARTICLES+"\nParticles: "+this.particles+"\nBands: "+this.bands);
-		var self = this;
+		chrome.runtime.sendMessage('jidcihllhnmbjbnoijfepopdpkpgeobe', 'listening', (response) => {
+        if(!response) {
+          this.$router.replace({name: 'home'});
+        } else if(response.listening === false) {
+			  this.$refs.myModalRef.show();
+        }
+      });
 		this.bands = null;
 		window.addEventListener("message", (event) => {
 			// We only accept messages from ourselves
@@ -77,26 +85,16 @@ export default {
 		});
 	},
 	beforeDestroy() {
-		this.NUM_PARTICLES = 175;
+		this.NUM_PARTICLES = 150;
 		this.particles = [];
 		this.bands = null;
 		this.ctx = null;
 		this.canvas = null;
 		window.cancelAnimationFrame(this.requestid);
-		window.removeEventListener("message");
 	},
 	mounted() {
 		this.canvas = document.getElementById('canvas1');
 		this.sizeCanvas();
-		window.addEventListener('beforeunload', () => {
-			this.NUM_PARTICLES = 150;
-			this.particles = [];
-			this.bands = null;
-			this.ctx = null;
-			this.canvas = null;
-			window.cancelAnimationFrame(this.requestid);
-			window.removeEventListener("message");
-		})
 	},
 	methods: {
 		sizeCanvas() {
