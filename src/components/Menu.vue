@@ -9,29 +9,23 @@
     <vs-sidebar parent="body" default-index="1" color="primary" class="sidebarx" spacer v-model="active">
 
       <div class="header-sidebar" slot="header">
+        <
         <h3>Spotilize</h3>
       </div>
+
       <vs-sidebar-group index=1 title="Music">
         <vs-sidebar-group index=1.1 title='Playlists'>
           <h4>Coming Soon</h4>
         </vs-sidebar-group>
-        <!--<vs-sidebar-group title="Store">
-          <vs-sidebar-item index="2.1" icon="store">
-            Store
-          </vs-sidebar-item>
-          <vs-sidebar-item index="2.2" icon="nature_people">
-            Nature
-          </vs-sidebar-item>
-          <vs-sidebar-item index="2.3" icon="style">
-            Style
-          </vs-sidebar-item>
-        </vs-sidebar-group>-->
+
         <vs-sidebar-group index=1.2 title='Recently Played'>
           <h4>Coming Soon</h4>
         </vs-sidebar-group>
+
         <vs-sidebar-group index=1.3 title='For You'>
           <h4>Coming Soon</h4>
         </vs-sidebar-group>
+
       </vs-sidebar-group>
 
       <vs-sidebar-group index=2 title='Visualizations'>
