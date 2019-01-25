@@ -6,12 +6,12 @@
     		<span class="menu-toggler__line"></span>
     		<span class="menu-toggler__line"></span>
   		</label>
-    <vs-sidebar parent="body" default-index="1" color="primary" class="sidebarx" spacer v-model="active">
+    <vs-sidebar parent="body" default-index="1" color="dark" class="sidebarx" spacer v-model="active">
 
       <div class="header-sidebar" slot="header">
-        <h3>
-          Spotilize
+        <h3><img src="../assets/logo.png" alt="Logo" height="32" width="32">
         </h3>
+
       </div>
 
       <vs-sidebar-group index=1 title="Music">
@@ -160,7 +160,6 @@ export default {
 }
 .sidebarx {
   font-family: 'Nunito', sans-serif;
-  background-color: rgba(66,185,131, .3);
 }
 
 .header-sidebar {
