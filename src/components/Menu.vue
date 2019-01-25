@@ -9,8 +9,9 @@
     <vs-sidebar parent="body" default-index="1" color="primary" class="sidebarx" spacer v-model="active">
 
       <div class="header-sidebar" slot="header">
-        <
-        <h3>Spotilize</h3>
+        <h3>
+          Spotilize
+        </h3>
       </div>
 
       <vs-sidebar-group index=1 title="Music">
@@ -46,7 +47,7 @@
       </vs-sidebar-group>
 
       <div class="footer-sidebar" slot="footer">
-        <b-btn @click='logout()'>Logout</b-btn>
+        <vs-button icon="reply" color="danger" type="flat" @click='logout()'>Logout</vs-button>
         <!--<vs-button icon="settings" color="primary" type="border"></vs-button>-->
       </div>
 
@@ -157,31 +158,22 @@ export default {
   --sidebar-width: 300px;
   --toggler-size: 35px;
 }
-
-.sidebar-content {
-  margin-top:5em;
-}
 .sidebarx {
   font-family: 'Nunito', sans-serif;
   background-color: rgba(66,185,131, .3);
 }
 
-.group h4 {
-  font-size: 1em !important;
-}
-
 .header-sidebar {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   width: 100%;
 }
 .header-sidebar h4 {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
 }
 .header-sidebar h4 > button {
   margin-left: 10px;
@@ -198,46 +190,6 @@ export default {
   border-radius: 0px !important;
 }
 
-.sidebar {
-  width: 300px;
-  transform: translateX(calc(300px * -1));
-  color: rgba(255,255,255,1);
-  background-size: 400% 400%;
-  background-color: rgba(66,185,131, .3);
-  background-position: 90% 90%;
-  display: flex;
-  flex: 0 0 auto;
-  justify-content: center;
-  justify-items: center;
-  text-align: justify;
-  -moz-text-align-last: center;
-  text-align-last: center;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  transition: transform .6s, background-position 1s .6s;
-  overflow-x: hidden;
-  line-height: .6rem;
-}
-
-button {
-  display:block;
-  color:white;
-  text-align:center;
-  font-size: 1.3em;
-  text-align: justify;
-  -moz-text-align-last: center;
-  text-align-last: center;
-  margin: 1.5em auto;
-}
-
-button:hover {
-  color: white;
-}
-
-#logout {
-  bottom: 1em;
-}
 
 /*.input-toggler:checked ~ .sidebar {
   transform: translateX(0);
@@ -253,14 +205,6 @@ button:hover {
   left: 20px;
   cursor: pointer;
   z-index: 1;
-}
-
-.sidebar_line {
-  height: 1px;
-  background: white;
-  position: absolute;
-  left: 5px;
-  right: 5px;
 }
 
 .menu-toggler__line {
