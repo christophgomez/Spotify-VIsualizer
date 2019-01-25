@@ -315,14 +315,10 @@ font-family: 'Nunito', sans-serif;
   pointer-events: none;
   z-index: 1;
   opacity: 0;
-  visibility: hidden;
-  display:none;
-  transition: visibility 0s, display .5s ease-in-out, opacity 2s ease-in-out;
+  transition: opacity .25s linear;
 }
 .show {
-  display:flex;
   opacity: 1;
-  visibility: visible;
   pointer-events: all;
   z-index: 1;
   cursor: auto !important;
