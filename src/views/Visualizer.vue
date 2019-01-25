@@ -1,5 +1,5 @@
 <template>
-	<div id='visualizer'>
+	<div id='visualizer' ref='vis'>
 		<canvas id='canvas1'></canvas>
 		<b-modal ref="myModalRef" ok-only style='color:black;text-align:center' title='Whoops...'>
 			<p>Click the Spotilize extension button in the Chrome toolbar to start the visualizer!</p>

@@ -6,7 +6,7 @@
     		<span class="menu-toggler__line"></span>
     		<span class="menu-toggler__line"></span>
   		</label>
-    <vs-sidebar parent="body" default-index="1" color="dark" class="sidebarx" spacer v-model="active">
+    <vs-sidebar parent="$refs.vis" default-index="1" color="dark" class="sidebarx" spacer v-model="active">
 
       <div class="header-sidebar" slot="header">
         <h3><img src="../assets/logo.png" alt="Logo" height="32" width="32">
@@ -97,6 +97,7 @@ export default {
   },
   methods: {
     logout() {
+      this.active = false;
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       this.$router.replace({name: 'home'});
