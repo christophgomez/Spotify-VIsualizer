@@ -48,7 +48,7 @@
 
       <div class="footer-sidebar" slot="footer">
         <vs-button icon="reply" color="danger" type="flat" @click='logout()'>Logout</vs-button>
-        <!--<vs-button icon="settings" color="primary" type="border"></vs-button>-->
+        <vs-button icon="keyboard_arrow_left" color="primary" type="border" @click='active=!active'></vs-button>
       </div>
 
     </vs-sidebar>
