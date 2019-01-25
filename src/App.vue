@@ -147,7 +147,7 @@ export default {
 		  	window.onSpotifyWebPlaybackSDKReady = () => {
      		var id;
 				this.player = new Spotify.Player({
-         	name: 'Vue Visualizer',
+         	name: 'Spotilize',
           getOAuthToken: cb => {
 					this.getToken();
             cb(this.token);

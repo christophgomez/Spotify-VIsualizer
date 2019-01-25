@@ -1,12 +1,63 @@
 <template>
 	<div id="menu">
-		<input type="checkbox" id="menuToggler" class="input-toggler" />
+		<input type="checkbox" id="menuToggler" class="input-toggler" @click='active=!active'/>
   		<label for="menuToggler" class="menu-toggler">
     		<span class="menu-toggler__line"></span>
     		<span class="menu-toggler__line"></span>
     		<span class="menu-toggler__line"></span>
   		</label>
-		<aside class="sidebar">
+    <vs-sidebar parent="body" default-index="1" color="primary" class="sidebarx" spacer v-model="active">
+
+      <div class="header-sidebar" slot="header">
+        <h3>Spotilize</h3>
+      </div>
+      <vs-sidebar-group index=1 title="Music">
+        <vs-sidebar-group index=1.1 title='Playlists'>
+          <h4>Coming Soon</h4>
+        </vs-sidebar-group>
+        <!--<vs-sidebar-group title="Store">
+          <vs-sidebar-item index="2.1" icon="store">
+            Store
+          </vs-sidebar-item>
+          <vs-sidebar-item index="2.2" icon="nature_people">
+            Nature
+          </vs-sidebar-item>
+          <vs-sidebar-item index="2.3" icon="style">
+            Style
+          </vs-sidebar-item>
+        </vs-sidebar-group>-->
+        <vs-sidebar-group index=1.2 title='Recently Played'>
+          <h4>Coming Soon</h4>
+        </vs-sidebar-group>
+        <vs-sidebar-group index=1.3 title='For You'>
+          <h4>Coming Soon</h4>
+        </vs-sidebar-group>
+      </vs-sidebar-group>
+
+      <vs-sidebar-group index=2 title='Visualizations'>
+        <h4>Coming Soon</h4>
+      </vs-sidebar-group>
+
+      <vs-sidebar-group index=3 title='Settings'>
+        <h4>Coming Soon</h4>
+      </vs-sidebar-group>
+
+      <vs-sidebar-group index=4 title='Info'>
+        <vs-sidebar-item index=4.3 icon="help">
+          Help
+        </vs-sidebar-item>
+        <vs-sidebar-item index=4.4 icon="help">
+          About
+        </vs-sidebar-item>
+      </vs-sidebar-group>
+
+      <div class="footer-sidebar" slot="footer">
+        <b-btn @click='logout()'>Logout</b-btn>
+        <!--<vs-button icon="settings" color="primary" type="border"></vs-button>-->
+      </div>
+
+    </vs-sidebar>
+		<!--<aside class="sidebar">
       <div class='sidebar-content'>
         <h3>Spotilize</h3>
         <span class="sidebar_line"></span>
@@ -34,7 +85,7 @@
     		  <li><b-btn :variant="'link'" @click='logout()'>Logout</b-btn></li>
         </ul>
       </div>
-		</aside>
+		</aside>-->
 	</div>
 </template>
 
@@ -46,6 +97,7 @@ export default {
       music: false,
       visualizations: false,
       settings: false,
+      active: false
     }
   },
   methods: {
@@ -115,6 +167,42 @@ export default {
 .sidebar-content {
   margin-top:5em;
 }
+.sidebarx {
+  font-family: 'Nunito', sans-serif;
+  background-color: rgba(66,185,131, .3);
+}
+
+.group h4 {
+  font-size: 1em !important;
+}
+
+.header-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+}
+.header-sidebar h4 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.header-sidebar h4 > button {
+  margin-left: 10px;
+}
+.footer-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.footer-sidebar > button {
+  border: 0px solid rgba(0,0,0,0) !important;
+  border-left: 1px solid rgba(0,0,0,0.07) !important;
+  border-radius: 0px !important;
+}
 
 .sidebar {
   width: 300px;
@@ -138,28 +226,6 @@ export default {
   line-height: .6rem;
 }
 
-ul {
-  padding: 0;
-  list-style-type: none;
-}
-.submenu {
-  display:none;
-  opacity: 0;
-  animation: fadeOut .5s;
-}
-.show {
-  opacity: 1;
-  display:inherit;
-  animation: fadeIn 1s;
-}
-@keyframes fadeIn {
-    from { opacity: 0; }
-      to { opacity: 1; }
-}  
-@-prefix-keyframes fadeOut {
-    from { opacity: 1; }
-      to { opacity: 0; }
-}
 button {
   display:block;
   color:white;
@@ -179,10 +245,10 @@ button:hover {
   bottom: 1em;
 }
 
-.input-toggler:checked ~ .sidebar {
+/*.input-toggler:checked ~ .sidebar {
   transform: translateX(0);
   background-position: 0 0;
-}
+}*/
 
 .menu-toggler {
   display: block;
@@ -218,9 +284,9 @@ button:hover {
   animation-timing-function: ease-in-out;
 }
 
-.input-toggler:checked ~ .menu-toggler .menu-toggler__line {
+/*.input-toggler:checked ~ .menu-toggler .menu-toggler__line {
   transition-delay: .25s, 0s;
-}
+}*/
 
 .menu-toggler__line:nth-child(2) {
   top: calc(35px / 5 * 2);
@@ -236,12 +302,12 @@ animation-duration: .3s;
   display: none;
 }
 
-.input-toggler:checked ~ .menu-toggler .menu-toggler__line {
+/*.input-toggler:checked ~ .menu-toggler .menu-toggler__line {
   background: white;
 }
 
 .input-toggler:checked ~ .menu-toggler .menu-toggler__line:nth-child(1) {
-  transform: translateY(calc(35px / 5 * 2)) rotate(45deg);
+  transform: translateX(260px) translateY(calc(10px / 5 * 2)) rotate(-45deg);
 }
 
 .input-toggler:checked ~ .menu-toggler .menu-toggler__line:nth-child(2) {
@@ -249,8 +315,8 @@ animation-duration: .3s;
 }
 
 .input-toggler:checked ~ .menu-toggler .menu-toggler__line:nth-child(3) {
-  transform: translateY(calc(35px / 5 * -2)) rotate(-45deg);
-}
+  transform:  translateX(260px) translateY(calc(10px / 5 * -2)) rotate(45deg);
+}*/
 
 .input-toggler:hover{
     opacity:1;

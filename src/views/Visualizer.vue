@@ -22,7 +22,7 @@ export default {
 			trackDuration: 0,
 			transferred: false,
 			isPaused: false,
-			NUM_PARTICLES: 175,
+			NUM_PARTICLES: 200,
 			particles: [],
 			height: null,
 			width: null,
