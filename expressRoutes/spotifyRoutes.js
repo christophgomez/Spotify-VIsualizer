@@ -202,12 +202,79 @@ module.exports = function (app, io) {
 
 	spotifyRoute.route('/analyze/:access_token/:id').get((req, res) => {
 		return analyze(req.params.access_token, req.params.id, res);
-	})
+	});
+
+	spotifyRoute.route('/playlists/:access_token/:offset').get((req, res) => {
+		return getPlaylists(req.params.access_token, req.params.offset, res);
+	});
+
+	spotifyRoute.route('/playlists/play').put((req, res) => {
+		return playPlaylist(req.body.access_token, req.body.uri, res);
+	});
+
+	spotifyRoute.route('/playlists/:id/tracks/:access_token/:offset').get((req, res) => {
+		return getPlaylistTracks(req.params.access_token, req.params.id, req.params.offset, res);
+	});
 
 	/***********************************END ROUTES**********************************************/
 
 
 	/***********************************HELPERS**********************************************/
+
+	function getPlaylists(token, offset, res) {
+		if (token === undefined) {
+			return res.send({
+				success: false
+			});
+		}
+		var options = {
+			url: 'https://api.spotify.com/v1/me/playlists?offset='+offset+"&limit=5",
+			headers: {
+				'Authorization': 'Bearer ' + token
+			},
+			json: true
+		};
+
+		request.get(options, (error, response, body) => {
+			if (!error && response.statusCode === 200) {
+				return res.send({
+					success: true,
+					playlists: body
+				});
+			} else {
+				return res.send({
+					success: false
+				});
+			}
+		});
+	}
+
+	function getPlaylistTracks(token, id, offset, res) {
+		if (token === undefined) {
+			return res.send({
+				success: false
+			});
+		}
+		var options = {
+			url: 'https://api.spotify.com/v1/playlists/'+id+'/tracks?offset='+offset+"&limit=20",
+			headers: {
+				'Authorization': 'Bearer ' + token
+			},
+			json: true
+		};
+		request.get(options, (error, response, body) => {
+			if (!error && response.statusCode === 200) {
+				return res.send({
+					success: true,
+					tracks: body
+				});
+			} else {
+				return res.send({
+					success: false
+				});
+			}
+		});
+	}
 
 	function getProfile(token, res) {
 		if (token === undefined) {
@@ -354,7 +421,7 @@ module.exports = function (app, io) {
 			if (!error && response.statusCode === 200) {
 				return res.send({
 					success: true,
-					object: body
+					items: body
 				});
 			} else {
 				return res.send({
@@ -449,6 +516,35 @@ module.exports = function (app, io) {
 				});
 			} else {
 				console.log(body);
+				return res.send({
+					success: false
+				});
+			}
+		});
+	}
+
+	function playPlaylist(token, uri, res) {
+		if (token === undefined || token === '' || uri === undefined || uri === '') {
+			return res.send({
+				success: false
+			});
+		}
+		var options = {
+			url: "https://api.spotify.com/v1/me/player/play",
+			body: {
+				'context_uri': uri,
+			},
+			headers: {
+				'Authorization': 'Bearer ' + token
+			},
+			json: true
+		};
+		request.put(options, (error, response, body) => {
+			if (!error && response.statusCode === 204) {
+				return res.send({
+					success: true
+				});
+			} else {
 				return res.send({
 					success: false
 				});

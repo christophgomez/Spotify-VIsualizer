@@ -1,17 +1,21 @@
 <template>
   <div id="auth">
     <div v-if='success===true' class='success'>
-      <h1>Spotify Link Successful!</h1>
-      <hr>
-      <p>Click the Spotilize Chrome Extension button in the browser toolbar now!</p>
-      <p>You'll do that everytime you want to use the app from now on.</p>
-      <small>(Forget the app URL!! It won't work if you don't click that button. Trust me!)</small><br><br>
-      <p>Still reading? Click that button!</p>
+      <div style='margin-top:10%;'>
+        <h1>Spotify Link Successful!</h1>
+        <hr>
+        <p>Click the Spotilize Chrome Extension button in the browser toolbar now!</p>
+        <p>You'll do that everytime you want to use the app from now on.</p>
+        <small>(Forget the app URL!! It won't work if you don't click that button. Trust me!)</small><br><br>
+        <p>Still reading? Click that button!</p>
+      </div>
     </div>
     <div v-if='success===false' class='fail'>
-      <h1>Uh oh!</h1>
-      <hr>
-      <p>Something went wrong linking your Spotify Account</p><font-awesome-icon icon='frown' size="3x"/> <br><br><p>Please go back and try again</p>
+      <div style='margin-top:10%;'>
+        <h1>Uh oh!</h1>
+        <hr>
+        <p>Something went wrong linking your Spotify Account</p><font-awesome-icon icon='frown' size="3x"/> <br><br><p>Please go back and try again</p>
+      </div>
     </div>
   </div>
 </template>
@@ -84,7 +88,6 @@ hr {
   width: 100%;
   text-align:center;
   height: 100%;
-  margin: 10% auto;
   padding: 10px;
   position: relative;
 }
@@ -93,7 +96,6 @@ hr {
   width: 100%;
   text-align:center;
   height: 100%;
-  margin: 10% auto;
   padding: 10px;
   position: relative;
 }
