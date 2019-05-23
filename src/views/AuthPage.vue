@@ -3,7 +3,6 @@
     <canvas id='canvas'></canvas>
     <div class='overlay'>
     <div v-if='success===true' class='success'>
-      <div style='margin-top:10%;'>
         <h1>Spotify Link Successful!</h1>
         <hr>
         <p>Only a couple more steps before you can begin rocking out to sweet visuals!</p>
@@ -13,14 +12,11 @@
           <li>Now go ahead and left click that extension icon!</li>
         </ol>
         <small>(Forget the app URL! You'll click that extension icon everytime you want to use the app from now on, otherwise the visualizer wont function properly. Trust me!)</small><br><br>
-      </div>
     </div>
     <div v-if='success===false' class='fail'>
-      <div style='margin-top:10%;'>
         <h1>Uh oh!</h1>
         <hr>
         <p>Something went wrong linking your Spotify Account</p><font-awesome-icon icon='frown' size="3x"/> <br><br><p>Please go back and try again</p>
-      </div>
     </div>
     </div>
   </div>
