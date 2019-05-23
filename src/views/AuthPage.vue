@@ -1,13 +1,18 @@
 <template>
   <div id="auth">
+    <canvas id='canvas'></canvas>
+    <div class='overlay'>
     <div v-if='success===true' class='success'>
       <div style='margin-top:10%;'>
         <h1>Spotify Link Successful!</h1>
         <hr>
-        <p>Click the Spotilize Chrome Extension button in the browser toolbar now!</p>
-        <p>You'll do that everytime you want to use the app from now on.</p>
-        <small>(Forget the app URL!! It won't work if you don't click that button. Trust me!)</small><br><br>
-        <p>Still reading? Click that button!</p>
+        <p>Only a couple more steps before you can begin rocking out to sweet visuals!</p>
+        <ol>
+          <li>Right click the extension icon on your Chrome toolbar</li>
+          <li>Go down to "This Can Read and Change Site Data" and select "On spotilize.herokuapp.com"</li>
+          <li>Now go ahead and left click that extension icon!</li>
+        </ol>
+        <small>(Forget the app URL! You'll click that extension icon everytime you want to use the app from now on, otherwise the visualizer wont function properly. Trust me!)</small><br><br>
       </div>
     </div>
     <div v-if='success===false' class='fail'>
@@ -16,6 +21,7 @@
         <hr>
         <p>Something went wrong linking your Spotify Account</p><font-awesome-icon icon='frown' size="3x"/> <br><br><p>Please go back and try again</p>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -28,7 +34,14 @@ export default {
   data () {
     return {
       success: Boolean,
-      code: null
+      code: null,
+      NUM_PARTICLES: 100,
+			particles: [],
+			height: null,
+			width: null,
+			ratio: null,
+      ctx: null,
+      canvas: HTMLElement,
     }
   },
   mounted() {
@@ -42,8 +55,74 @@ export default {
     if(this.$route.query.error) {
       this.success = false;
     }
+    this.canvas = document.getElementById('canvas');
+		this.sizeCanvas();
   },
+  beforeDestroy() {
+		this.NUM_PARTICLES = 250;
+		this.particles = [];
+		this.bands = null;
+		this.ctx = null;
+		this.canvas = null;
+		window.cancelAnimationFrame(this.requestid);
+	},
   methods: {
+    sizeCanvas() {
+			this.ratio = window.devicePixelRatio;
+			this.height = window.innerHeight;
+			this.width = window.innerWidth;
+			//scale the canvas
+			if(this.canvas !== null && this.canvas !== undefined) {
+				this.canvas.setAttribute('height', this.height * this.ratio);
+				this.canvas.setAttribute('width', this.width * this.ratio);
+				this.ctx = this.canvas.getContext('2d');
+        this.ctx.globalCompositeOperation = 'lighter';
+        this.setup();
+      }
+    },
+    setup() {
+			var i, j, particle, x, y;
+			for (i = 0; i <= this.NUM_PARTICLES; i++) {
+        x = this.random(this.width);
+        y = this.random(this.height);
+        particle = new Particle(x, y);
+        particle.energy = this.random(particle.band / 256);
+        this.particles.push(particle);
+			}
+			this.requestid = requestAnimationFrame(this.draw);
+    },
+    draw() {
+			this.ctx.clearRect(0, 0, this.width * this.ratio, this.height * this.ratio);
+			this.update();
+			this.requestid = requestAnimationFrame(this.draw);
+		},
+		update() {
+			let particle;
+      for (let j = 0; j < this.particles.length; j++) {
+				particle = this.particles[j];
+        // recycle particles
+        if (particle.y < -particle.size * particle.level * particle.scale) {
+         	//particle.reset();
+          particle.x = this.random(this.width);
+					particle.y = this.height + (particle.size * particle.scale * particle.level);
+        }
+        particle.move();
+        particle.draw(this.ctx);
+			}
+		},
+		random (min, max = undefined) {
+			if (this.isArray(min))
+				return min[~~(Math.random() * min.length)];
+			if (!this.isNumber(max))
+				max = min || 1, min = 0;
+			return min + Math.random() * (max - min);
+		},
+		isArray(object) {
+			return Object.prototype.toString.call(object) == '[object Array]';
+		},
+		isNumber(object) {
+			return typeof object == 'number';
+		},
     async exchange() {
       var code = this.code;
       const response = await SpotifyService.exchange({code});
@@ -98,6 +177,29 @@ hr {
   height: 100%;
   padding: 10px;
   position: relative;
+}
+#container {
+  position: relative;
+}
+#container canvas, .overlay {
+  position: absolute;
+}
+canvas {
+  z-index: 0;
+  left:0;
+  right: 0;
+}
+.overlay {
+  z-index: 2;
+  margin: 15% auto;
+  width: 100%;
+}
+#container .overlay footer {
+  position: fixed;
+  left:0;
+  right:0;
+  margin: 0 auto;
+  bottom: 0;
 }
 #auth:before {
   background-size: 100%;
