@@ -161,19 +161,11 @@ hr {
 }
 .fail {
   color: white;
-  width: 100%;
   text-align:center;
-  height: 100%;
-  padding: 10px;
-  position: relative;
 }
 .success {
   color: white;
-  width: 100%;
   text-align:center;
-  height: 100%;
-  padding: 10px;
-  position: relative;
 }
 #container {
   position: relative;
