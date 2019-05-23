@@ -1,5 +1,6 @@
 <template>
   <div id="auth">
+    <div id='container'>
     <canvas id='canvas'></canvas>
     <div class='overlay'>
     <div v-if='success===true' class='success'>
@@ -17,6 +18,7 @@
         <h1>Uh oh!</h1>
         <hr>
         <p>Something went wrong linking your Spotify Account</p><font-awesome-icon icon='frown' size="3x"/> <br><br><p>Please go back and try again</p>
+    </div>
     </div>
     </div>
   </div>
@@ -140,10 +142,17 @@ export default {
 
 <style scoped>
 #auth {
-  width:100%;
-  height: 100%;
   margin: 0 auto;
-  background: #13242f;
+	height: 100%;
+  width: 100%;
+	color: white;
+	background: #13242f;
+}
+#container {
+  position: relative;
+}
+#container canvas, .overlay {
+  position: absolute;
 }
 hr {
     display: block;
