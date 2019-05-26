@@ -1,13 +1,13 @@
 <template>
 	<div id="menu">
-		<input type="checkbox" id="menuToggler" class="input-toggler" @click='active=!active'/>
+		<input type="checkbox" id="menuToggler" class="input-toggler" @click='active=true'/>
   		<label for="menuToggler" class="menu-toggler">
     		<span class="menu-toggler__line"></span>
     		<span class="menu-toggler__line"></span>
     		<span class="menu-toggler__line"></span>
   		</label>
-    <vs-sidebar parent='body' default-index="1" color="dark" class="sidebarx" spacer v-model="active">
 
+    <vs-sidebar parent='body' default-index="1" color="dark" class="sidebarx" spacer v-model="active">
       <div class="header-sidebar" slot="header" style='text-align:center'>
         <h3><img src="../assets/logo.png" alt="Logo" height="32" width="32">
         </h3>
@@ -73,39 +73,10 @@
 
       <div class="footer-sidebar" slot="footer">
         <vs-button icon="reply" color="danger" type="flat" @click='logout()'>Logout</vs-button>
-        <vs-button icon="keyboard_arrow_left" color="primary" type="border" @click='active=!active'></vs-button>
+        <vs-button icon="keyboard_arrow_left" color="primary" type="border" @click='active=false'></vs-button>
       </div>
-
     </vs-sidebar>
-		<!--<aside class="sidebar">
-      <div class='sidebar-content'>
-        <h3>Spotilize</h3>
-        <span class="sidebar_line"></span>
-        <br>
-        <ul>
-          <li>
-            <b-btn :variant="'link'" @click="toggle('music')">Music</b-btn>
-            <ul class='submenu' :class='{show: music}'>
-              <li>Coming Soon</li>
-            </ul>
-          </li>
-          <li>
-            <b-btn :variant="'link'" @click="toggle('visualizations')">Visualizations</b-btn>
-            <ul class='submenu' :class='{show: visualizations}'>
-              <li>Coming Soon</li>
-            </ul>
-          </li>
-          <li>
-            <b-btn :variant="'link'" @click="toggle('settings')">Settings</b-btn>
-            <ul class='submenu' :class='{show: settings}'>
-              <li>Coming Soon</li>
-            </ul>
-          </li>
-          <li><b-btn :variant="'link'">About</b-btn></li>
-    		  <li><b-btn :variant="'link'" @click='logout()'>Logout</b-btn></li>
-        </ul>
-      </div>
-		</aside>-->
+
 	</div>
 </template>
 
@@ -139,11 +110,7 @@ export default {
       this.active = false;
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
-      this.$router.replace({name: 'home'});
-     /*var data = {
-				type: "close",
-			}
-      window.postMessage(data, "*");*/
+      this.$router.push({name: 'home'})
     },
     async getPlaylists() {
       const response = await SpotifyService.getPlaylists(localStorage.access_token, this.playlistOffset);

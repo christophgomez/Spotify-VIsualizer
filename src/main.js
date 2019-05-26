@@ -93,9 +93,17 @@ Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.use(BootstrapVue);
 Vue.use(VueMaterial);
 
+import NProgress from 'vue-nprogress'
+Vue.use(NProgress)
+const nprogress = new NProgress({
+  parent: "body"
+})
+
+
 Vue.config.productionTip = false
 
 new Vue({
+  nprogress,
   router,
   wait: new VueWait(),
   render: h => h(App)

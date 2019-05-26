@@ -1,7 +1,7 @@
 <template>
   <div id="app" :class="{show: isShowing}">
     <notifications group="track" class="notif"/>
-    <Hamburger class="controls" :class="{show: isShowing}" v-if="landing === false"></Hamburger>
+    <Hamburger class="controls" :class="{show: isShowing && landing===false}"></Hamburger>
     <router-view/>
     <div class="controls-wrapper" v-if="landing === false">
       <Controls
@@ -19,17 +19,17 @@
 
 <script>
 import SpotifyService from "@/services/SpotifyService.js";
-import Nav from "@/components/Nav.vue";
 import Controls from "@/components/Controls";
 import Hamburger from "@/components/Menu";
 import screenfull from "screenfull";
+import NprogressContainer from 'vue-nprogress/src/NprogressContainer'
 
 export default {
   name: "App",
   components: {
-    Nav,
     Controls,
-    Hamburger
+    Hamburger,
+    NprogressContainer
   },
   data() {
     return {
@@ -55,7 +55,6 @@ export default {
     };
   },
   created() {
-    this.$wait.start("loading");
     if (localStorage.access_token) {
       if (chrome.runtime) {
         chrome.runtime.sendMessage(
@@ -99,9 +98,7 @@ export default {
         return;
       } else if (to.path === "/visualizer") {
         this.initVis();
-      } else {
-        return;
-      }
+      } 
     }
   },
   methods: {
