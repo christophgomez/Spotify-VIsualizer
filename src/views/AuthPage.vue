@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import Particle from '@/util/Particle.js';
+import Particle from '@/util/Capsule.js';
 import SpotifyService from '@/services/SpotifyService';
 
 export default {

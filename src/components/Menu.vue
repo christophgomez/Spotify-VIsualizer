@@ -9,17 +9,18 @@
 
     <vs-sidebar parent='body' default-index="1" color="dark" class="sidebarx" spacer v-model="active">
       <div class="header-sidebar" slot="header" style='text-align:center'>
-        <h3><img src="../assets/logo.png" alt="Logo" height="32" width="32">
+        <h3>
+          <img src="../assets/logo.png" alt="Logo" height="32" width="32">
         </h3>
       </div>
       <vs-sidebar-group :index='"1"' title="Music">
 
         <div @click='getRecent()'>
-        <vs-sidebar-group index=1.1 title='Recently Played'>
-          <div v-for='(track, index) in recentlyPlayed' :key='index'>
-            <vs-sidebar-item :index='"1.1."+(index+1)'>{{track.name}}</vs-sidebar-item>
-          </div>
-        </vs-sidebar-group>
+          <vs-sidebar-group index=1.1 title='Recently Played'>
+            <div v-for='(track, index) in recentlyPlayed' :key='index'>
+              <vs-sidebar-item :index='"1.1."+(index+1)'>{{track.name}}</vs-sidebar-item>
+            </div>
+          </vs-sidebar-group>
         </div>
 
         <vs-sidebar-group index=1.2 title='Your Music'>
@@ -45,21 +46,24 @@
       </vs-sidebar-group>
       
       <vs-sidebar-group index=2 title='Visuals'>
-        <vs-sidebar-group index=2.2 title='Settings'>
-          <vs-sidebar-group title='Colors'>
-            <vs-sidebar-group title='Shapes'>
-              <vs-sidebar-group title='Presets'>
 
-              </vs-sidebar-group>
-              <vs-sidebar-group title='Custom'>
-                
-              </vs-sidebar-group>
+        <vs-sidebar-group index=2.2 title='Settings'>
+
+          <vs-sidebar-group title='Capsule Colors'>
+            <vs-sidebar-group title='Presets'>
             </vs-sidebar-group>
-            <vs-sidebar-group title='Background'></vs-sidebar-group>
+            <vs-sidebar-group title='Custom'></vs-sidebar-group>
           </vs-sidebar-group>
-          <vs-sidebar-group title='Shape'></vs-sidebar-group>
-          <vs-sidebar-group title='Pattern'></vs-sidebar-group>
-        </vs-sidebar-group>
+
+          <vs-sidebar-group title='Background Color'>
+            <ul style='text=align:left;position:relative;left:-4em;'>
+              <li style='text=align:left'>
+                <vs-radio v-model='backgroundColor' vs-value='Dark' style='text=align:left' @click="changeBg('Dark')">Dark</vs-radio>
+                <vs-radio v-model='backgroundColor' vs-value='Light' style='text=align:left' @click="changeBg('Light')">Light</vs-radio>
+              </li>
+            </ul>
+          </vs-sidebar-group>
+      </vs-sidebar-group>
       </vs-sidebar-group>
 
       <vs-sidebar-group index=4 title='Info'>
@@ -82,6 +86,8 @@
 
 <script>
 import SpotifyService from '@/services/SpotifyService';
+import {EventBus} from '../eventbus';
+
 export default {
   name: 'Menu',
   data() {
@@ -100,6 +106,7 @@ export default {
       moreTracks: true,
       lessTracks: false,
       recentlyPlayed: [],
+      backgroundColor: 'Dark',
     }
   },
   created() {
@@ -111,6 +118,9 @@ export default {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       this.$router.push({name: 'home'})
+    },
+    changeBg(color) {
+      EventBus.$emit('changeBg', color);
     },
     async getPlaylists() {
       const response = await SpotifyService.getPlaylists(localStorage.access_token, this.playlistOffset);

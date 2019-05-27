@@ -45,14 +45,14 @@ function isNumber(object) {
 }
 
 
-var Particle = class Particle {
+var Capsule = class Capsule {
 
 	constructor(x1 = 0, y1 = 0) {
 		this.x = x1;
 		this.y = y1;
 		this.reset();
 	}
-
+	
 	reset() {
 		this.level = 1 + Math.floor(random(4));
 		this.scale = random(SCALE.MIN, SCALE.MAX);
@@ -105,4 +105,4 @@ var Particle = class Particle {
 	}
 }
 
-export default Particle;
+export default Capsule;

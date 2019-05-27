@@ -19,7 +19,7 @@
 
 <script>
 import Link from '@/components/Link';
-import Particle from '@/util/Particle.js';
+import Particle from '@/util/Capsule.js';
 
 export default {
   name: "Landing",
