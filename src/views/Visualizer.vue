@@ -81,9 +81,6 @@ export default {
 
 			if(event.data.type = "frequency_data")
 				this.$refs.Capsule.bands = event.data.data;
-				
-			if(event.data.type = "fullScreenDone")
-				this.$refs.Capsule.sizeCanvas();
 		});
 
 		EventBus.$on('changeVisual', (data) => {

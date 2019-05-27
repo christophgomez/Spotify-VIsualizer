@@ -2,9 +2,9 @@
 	<div id="menu">
 		<input type="checkbox" id="menuToggler" class="input-toggler" @click='active=true'/>
   		<label for="menuToggler" class="menu-toggler">
-    		<span class="menu-toggler__line"></span>
-    		<span class="menu-toggler__line"></span>
-    		<span class="menu-toggler__line"></span>
+    		<span :class="{menu_toggler_line_Dark: isDark===true, menu_toggler_line_Light: isDark===false}"></span>
+    		<span :class="{menu_toggler_line_Dark: isDark=== true, menu_toggler_line_Light: isDark===false}"></span>
+    		<span :class="{menu_toggler_line_Dark: isDark===true, menu_toggler_line_Light: isDark===false}"></span>
   		</label>
 
     <vs-sidebar parent='body' default-index="1" color="dark" class="sidebarx" spacer v-model="active">
@@ -107,6 +107,7 @@ export default {
       lessTracks: false,
       recentlyPlayed: [],
       backgroundColor: 'Dark',
+      isDark: true,
     }
   },
   created() {
@@ -121,6 +122,11 @@ export default {
     },
     changeBg(color) {
       EventBus.$emit('changeBg', color);
+      if(color==="Dark") {
+        this.isDark = true;
+      } else {
+        this.isDark = false;
+      }
     },
     async getPlaylists() {
       const response = await SpotifyService.getPlaylists(localStorage.access_token, this.playlistOffset);
@@ -239,12 +245,6 @@ export default {
   border-radius: 0px !important;
 }
 
-
-/*.input-toggler:checked ~ .sidebar {
-  transform: translateX(0);
-  background-position: 0 0;
-}*/
-
 .menu-toggler {
   display: block;
   width: 35px;
@@ -256,7 +256,32 @@ export default {
   z-index: 1;
 }
 
-.menu-toggler__line {
+.menu_toggler_line_Light {
+  height: calc(35px / 5);
+  background: black;
+  position: absolute;
+  left: 0;
+  right: 0;
+  transition-property: transform, opacity;
+  transition-duration: .5s, .25s;
+  transition-delay: 0s, .5s;
+  animation-name: slidein;
+  animation-duration: .2s;
+  animation-iteration-count:1;
+  animation-timing-function: ease-in-out;
+}
+
+.menu_toggler_line_Light:nth-child(2) {
+  top: calc(35px / 5 * 2);
+animation-duration: .3s;
+}
+
+.menu_toggler_line_Light:nth-child(3) {
+  top: calc(35px / 5 * 4);
+  animation-duration:.4s;
+}
+
+.menu_toggler_line_Dark {
   height: calc(35px / 5);
   background: white;
   position: absolute;
@@ -271,16 +296,12 @@ export default {
   animation-timing-function: ease-in-out;
 }
 
-/*.input-toggler:checked ~ .menu-toggler .menu-toggler__line {
-  transition-delay: .25s, 0s;
-}*/
-
-.menu-toggler__line:nth-child(2) {
+.menu_toggler_line_Dark:nth-child(2) {
   top: calc(35px / 5 * 2);
 animation-duration: .3s;
 }
 
-.menu-toggler__line:nth-child(3) {
+.menu_toggler_line_Dark:nth-child(3) {
   top: calc(35px / 5 * 4);
   animation-duration:.4s;
 }
@@ -288,22 +309,6 @@ animation-duration: .3s;
 .input-toggler {
   display: none;
 }
-
-/*.input-toggler:checked ~ .menu-toggler .menu-toggler__line {
-  background: white;
-}
-
-.input-toggler:checked ~ .menu-toggler .menu-toggler__line:nth-child(1) {
-  transform: translateX(260px) translateY(calc(10px / 5 * 2)) rotate(-45deg);
-}
-
-.input-toggler:checked ~ .menu-toggler .menu-toggler__line:nth-child(2) {
-  opacity: 0;
-}
-
-.input-toggler:checked ~ .menu-toggler .menu-toggler__line:nth-child(3) {
-  transform:  translateX(260px) translateY(calc(10px / 5 * -2)) rotate(45deg);
-}*/
 
 .input-toggler:hover{
     opacity:1;

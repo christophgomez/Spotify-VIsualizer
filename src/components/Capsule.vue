@@ -32,29 +32,37 @@ export default {
     window.cancelAnimationFrame(this.requestid);
   },
   mounted() {
+
     this.canvas = document.getElementById("canvas");
-    this.sizeCanvas();
+    this.ctx = this.canvas.getContext("2d");
+    this.resizeCanvas();
+    window.addEventListener('resize', this.resizeCanvas, false);
+
     if(this.isDark === true) {
       this.darkBg();
     } else {
       this.lightBg();
     }
+
     EventBus.$on('changeBg', (data) => {
 			if(data==='Dark') {
 				this.darkBg();
 			} else {
 				this.lightBg();
 			}
-		})
+    });
+    this.setup();
   },
   methods: {
     darkBg() {
       this.isDark = true;
+      this.ctx.globalCompositeOperation = "lighter";
     },
     lightBg() {
       this.isDark = false;
+      this.ctx.globalCompositeOperation = "source-over";
     },
-    sizeCanvas() {
+    resizeCanvas() {
       this.ratio = window.devicePixelRatio;
       this.height = window.innerHeight;
       this.width = window.innerWidth;
@@ -63,11 +71,13 @@ export default {
       if (this.canvas !== null && this.canvas !== undefined) {
         this.canvas.setAttribute("height", this.height * this.ratio);
         this.canvas.setAttribute("width", this.width * this.ratio);
-        this.ctx = this.canvas.getContext("2d");
-        this.ctx.globalCompositeOperation = "lighter";
       }
+      this.capsules = [];
+      window.cancelAnimationFrame(this.requestid);
+      this.setup();
     },
     setup() {
+      this.capsules = [];
       var i, j, capsule, x, y;
       for (i = 0; i < this.NUM_CAPSULES; i++) {
         x = this.random(this.width);
@@ -88,7 +98,7 @@ export default {
       );
 
       // Draw the capsules
-      if (this.bands !== null) {
+      if (this.bands !== null && this.capsules !== null) {
         let capsule;
         for (let j = 0; j < this.capsules.length; j++) {
           capsule = this.capsules[j];
@@ -166,6 +176,33 @@ export default {
 }
 
 .light {
-  background-color: aliceblue;
+  background-color: white;
+}
+
+.light::before {
+  background-size: 100%;
+  background-image: -moz-radial-gradient(center, ellipse cover, rgba(255, 255, 255, 1) 20%, #ffffff 95%);
+  background-image: -webkit-radial-gradient(center, ellipse cover, rgba(255, 255, 255, 1) 20%, #ffffff 95%);
+  background-image: radial-gradient(ellipse cover at center, rgba(255, 255, 255, 1) 20%, #ffffff 95%);
+  position: absolute;
+  content: "";
+  z-index: 0;
+  opacity: 0.9;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+}
+
+.light::after {
+  background: url("https://s.cdpn.io/1715/noise-1.png");
+  position: absolute;
+  content: "";
+  z-index: 0;
+  opacity: 0.8;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
 }
 </style>
