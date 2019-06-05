@@ -270,7 +270,25 @@ export default {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('capsule_bg');
-      var colors = ['69D2E7', '1B676B', 'BEF202', 'EBE54D', '00CDAC', '1693A5', 'F9D423', 'FF4E50', 'E7204E', '0CCABA', 'FF006F'];
+      var colors = ['F44336',
+        'E91E63',
+        '9C27B0',
+        '673AB7',
+        '3F51B5',
+        '2196F3',
+        '03A9F4',
+        '00BCD4',
+        '009688',
+        '4CAF50',
+        '8BC34A',
+        'CDDC39',
+        'FFEB3B',
+        'FFC107',
+        'FF9800',
+        'FF5722',
+        '795548',
+        '9E9E9E',
+        '607D8B',];
       localStorage.setItem('capsule_colors', JSON.stringify(colors));
       localStorage.removeItem('device_id');
       localStorage.removeItem('email');
