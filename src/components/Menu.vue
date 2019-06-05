@@ -47,6 +47,13 @@
       
       <vs-sidebar-group index=2 title='Visuals'>
 
+        <!--<ul style='text=align:left;position:relative;left:-4em;'>
+          <li style='text=align:left'>
+            <vs-radio v-model='activeVisual' vs-value='Capsules' style='text=align:left'>Capsules</vs-radio>
+            <vs-radio v-model='activeVisual' vs-value='Three' style='text=align:left'>Three</vs-radio>
+          </li>
+        </ul>-->
+
         <vs-sidebar-group index=2.2 title='Settings'>
 
           <vs-sidebar-group title='Capsule Amount'>
@@ -120,6 +127,7 @@ export default {
       moreTracks: true,
       lessTracks: false,
       recentlyPlayed: [],
+      activeVisual: 'Capsules',
       backgroundColor: 'Dark',
       isDark: true,
       colors: [
@@ -167,6 +175,12 @@ export default {
   },
   created() {
     this.getPlaylists();
+
+    if(localStorage.active_visual) {
+      this.activeVisual = localStorage.active_visual;
+    } else {
+      localStorage.setItem('active_visual', "Capsules");
+    }
 
     if(localStorage.capsule_bg){
       if(localStorage.capsule_bg === 'Dark') {
@@ -363,6 +377,10 @@ export default {
     capsuleAmount: (val) => {
       EventBus.$emit('changeCapsuleAmount', val);
       localStorage.setItem('capsule_amount', val);
+    },
+    activeVisual: (val) => {
+      EventBus.$emit('changeVisual', val);
+      localStorage.setItem('active_visual', val);
     }
   }
 }
@@ -477,5 +495,14 @@ animation-duration: .3s;
 @keyframes slidein {
   from {left: -200%; right:200%;}
   to {left: 0; right: 0;}
+}
+
+.vs-select {
+  width: 100%
+}
+@media (max-width: 550px) {
+  .vs-select {
+    width: 100%
+  }
 }
 </style>

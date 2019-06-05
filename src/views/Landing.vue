@@ -56,8 +56,8 @@ export default {
           }
         });
       } else {
-      document.getElementById('extCheck').innerHTML = "<p>To use this app you need to download the Chrome Extension first</p>";
-      this.ext = false;
+        document.getElementById('extCheck').innerHTML = "<p>To use this app you need to download the Chrome Extension first</p>";
+        this.ext = false;
       }
     } else {
       document.getElementById('extCheck').innerHTML = "<p>I'm sorry!<br>Due to the nature of the technology used in this app, it is only accesible on Google Chrome.</p>";
@@ -95,7 +95,6 @@ export default {
 			for (i = 0; i <= this.NUM_PARTICLES; i++) {
         x = this.random(this.width);
         y = this.random(this.height);
-        console.log("Colors: "+JSON.parse(localStorage.capsule_colors));
         particle = new Particle(x, y, JSON.parse(localStorage.capsule_colors));
         particle.energy = this.random(particle.band / 256);
         this.particles.push(particle);

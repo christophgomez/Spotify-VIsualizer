@@ -34,7 +34,6 @@ export default {
   mounted() {
     this.canvas = document.getElementById("canvas");
     this.ctx = this.canvas.getContext("2d");
-    this.resizeCanvas();
     window.addEventListener('resize', this.resizeCanvas, false);
 
     if(localStorage.capsule_bg)
@@ -77,7 +76,7 @@ export default {
       window.cancelAnimationFrame(this.requestid);
     }
 
-    this.setup();
+    this.resizeCanvas();
   },
   methods: {
     darkBg() {

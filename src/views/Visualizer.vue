@@ -4,6 +4,9 @@
 			<div v-if='visualSelected.capsules === true'>
 				<Capsule ref='Capsule'></Capsule>
 			</div>
+			<div v-else-if="visualSelected.three === true">
+				<p>Three.js Coming Soon</p>
+			</div>
 		</div>
 
 		<b-modal ref="myModalRef" ok-only style='color:black;text-align:center' title='Whoops...'>
@@ -63,7 +66,6 @@ export default {
 		},
 	},
 	created() {
-
 		chrome.runtime.sendMessage('jidcihllhnmbjbnoijfepopdpkpgeobe', 'listening', (response) => {
         if(!response) {
           this.$router.replace({name: 'home'});
@@ -75,19 +77,20 @@ export default {
 		this.bands = null;
 
 		window.addEventListener("message", (event) => {
-
 			if (event.source != window)
 				return;
-
 			if(event.data.type = "frequency_data")
 				this.$refs.Capsule.bands = event.data.data;
 		});
 
 		EventBus.$on('changeVisual', (data) => {
 			this.cancelAllVisuals();
-			switch(data.visual) {
-				case 'capsules':
+			switch(data) {
+				case 'Capsules':
 					this.visualSelected.capsules = true;
+					break;
+				case 'Three':
+					this.visualSelected.three = true;
 					break;
 			}
 		});
@@ -95,6 +98,7 @@ export default {
 	methods: {
 		cancelAllVisuals(){
 			this.visualSelected.capsules = false;
+			this.visualSelected.three = false;
 		},
 		async transfer() {
 			const response = await SpotifyService.transferDevicePlayer({player_id: localStorage.device_id, access_token: localStorage.access_token, play: true});
