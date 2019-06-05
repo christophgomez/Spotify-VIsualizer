@@ -7,13 +7,13 @@
     		<span :class="{menu_toggler_line_Dark: isDark===true, menu_toggler_line_Light: isDark===false}"></span>
   		</label>
 
-    <vs-sidebar parent='body' default-index="1" color="dark" class="sidebarx" spacer v-model="active">
-      <div class="header-sidebar" slot="header" style='text-align:center'>
+    <vs-sidebar parent='body' default-index="1" class="sidebarx" spacer v-model="active">
+      <div class="header-sidebar" slot="header" style='text-align:center;'>
         <h3>
           <img src="../assets/logo.png" alt="Logo" height="32" width="32">
         </h3>
       </div>
-      <vs-sidebar-group :index='"1"' title="Music">
+      <!--<vs-sidebar-group :index='"1"' title="Music">
 
         <div @click='getRecent()'>
           <vs-sidebar-group index=1.1 title='Recently Played'>
@@ -37,22 +37,32 @@
           </vs-sidebar-group>
         </vs-sidebar-group>
 
-        <!--<vs-sidebar-group index=1.3 title='Browse'>
+        <vs-sidebar-group index=1.3 title='Browse'>
           <vs-sidebar-group index=1.3.4 title='Discover'><h4>Coming Soon</h4></vs-sidebar-group>
           <vs-sidebar-group index=1.3.1 title='Categories'><h4>Coming Soon</h4></vs-sidebar-group>
           <vs-sidebar-group index=1.3.2 title='Featured Playlists'><h4>Coming Soon</h4></vs-sidebar-group>
           <vs-sidebar-group index=1.3.3 title='New Releases'><h4>Coming Soon</h4></vs-sidebar-group>
-        </vs-sidebar-group>-->
-      </vs-sidebar-group>
+        </vs-sidebar-group>
+      </vs-sidebar-group>-->
       
       <vs-sidebar-group index=2 title='Visuals'>
 
         <vs-sidebar-group index=2.2 title='Settings'>
 
+          <vs-sidebar-group title='Capsule Amount'>
+            <vs-input-number v-model='capsuleAmount' style='background:white'/>
+          </vs-sidebar-group>
+
           <vs-sidebar-group title='Capsule Colors'>
-            <vs-sidebar-group title='Presets'>
+            <vs-sidebar-group title='Presets'></vs-sidebar-group>
+            <vs-sidebar-group title='Custom'>
+              <div v-for='(color, index) in colors' :key='index' style='display:inline-block'>
+                <ColorSwatch :color='color' :isSelected='getSelectedColor(color)' @click.native='toggleSelectedColor(color)'></ColorSwatch>
+              </div>
+              <br>
+              <vs-button type='line' color='dark' size='small' style='float:left;' @click='toggleAllColors(false)'>Select All</vs-button>
+              <vs-button type='line' color='danger' size='small' style='margin-left:10px;float:left;' @click='toggleAllColors(true)'>None</vs-button>
             </vs-sidebar-group>
-            <vs-sidebar-group title='Custom'></vs-sidebar-group>
           </vs-sidebar-group>
 
           <vs-sidebar-group title='Background Color'>
@@ -87,9 +97,13 @@
 <script>
 import SpotifyService from '@/services/SpotifyService';
 import {EventBus} from '../eventbus';
+import ColorSwatch from '@/components/ColorSwatch';
 
 export default {
   name: 'Menu',
+  components: {
+    ColorSwatch
+  },
   data() {
     return {
       music: false,
@@ -108,25 +122,165 @@ export default {
       recentlyPlayed: [],
       backgroundColor: 'Dark',
       isDark: true,
+      colors: [
+        '#F44336',
+        '#E91E63',
+        '#9C27B0',
+        '#673AB7',
+        '#3F51B5',
+        '#2196F3',
+        '#03A9F4',
+        '#00BCD4',
+        '#009688',
+        '#4CAF50',
+        '#8BC34A',
+        '#CDDC39',
+        '#FFEB3B',
+        '#FFC107',
+        '#FF9800',
+        '#FF5722',
+        '#795548',
+        '#9E9E9E',
+        '#607D8B',
+        ],
+      selectedColors: ['#F44336',
+        '#E91E63',
+        '#9C27B0',
+        '#673AB7',
+        '#3F51B5',
+        '#2196F3',
+        '#03A9F4',
+        '#00BCD4',
+        '#009688',
+        '#4CAF50',
+        '#8BC34A',
+        '#CDDC39',
+        '#FFEB3B',
+        '#FFC107',
+        '#FF9800',
+        '#FF5722',
+        '#795548',
+        '#9E9E9E',
+        '#607D8B',],
+      capsuleAmount: 200,
     }
   },
   created() {
     this.getPlaylists();
+
+    if(localStorage.capsule_bg){
+      if(localStorage.capsule_bg === 'Dark') {
+        this.isDark = true;
+        this.backgroundColor = 'Dark';
+      } else {
+        this.isDark = false;
+        this.backgroundColor = 'Light';
+      }
+    }
+
+    if(localStorage.capsule_amount) {
+      this.capsuleAmount = localStorage.capsule_amount;
+    }
+
+    if(localStorage.capsule_colors) {
+      var COLORS = JSON.parse(localStorage.capsule_colors);
+      this.selectedColors = [];
+		  for (var i = 0; i < COLORS.length; i++) {
+			  let symb = '#';
+			  let color = `${symb}${COLORS[i]}`;
+			  this.selectedColors[i] = color;
+		  }
+    }
   },
   methods: {
+    getSelectedColor(field) {
+      return this.selectedColors.includes(field);
+    },
+    toggleAllColors(clear) {
+      this.selectedColors = [];
+      if(clear) {
+        var colors = [];
+        if(this.isDark) {
+          colors.push("ffffff");
+        } else {
+          colors.push("000000");
+        }
+        localStorage.setItem('capsule_colors', JSON.stringify(colors));
+        EventBus.$emit('changeColors', colors);
+      } else {
+        for(var i = 0; i < this.colors.length;i++) {
+          this.selectedColors.push(this.colors[i]);
+        }
+        var colors = [];
+        for(var i = 0; i < this.selectedColors.length;i++) {
+          var color = this.selectedColors[i];
+          color = color.replace('#','');
+          colors.push(color);
+        }
+        localStorage.setItem('capsule_colors', JSON.stringify(colors));
+        EventBus.$emit('changeColors', colors);
+      }
+    },
+    toggleSelectedColor(color) {
+      if(this.selectedColors.length === 1 && (this.selectedColors.includes("#ffffff") || this.selectedColors.includes('#000000'))) {
+        this.selectedColors.pop();
+      }
+      if(this.selectedColors.includes(color)) {
+        this.selectedColors = this.arrayRemove(this.selectedColors, color);
+      } else {
+        this.selectedColors.push(color);
+      }
+      var colors = [];
+      for(var i = 0; i < this.selectedColors.length;i++) {
+        var color = this.selectedColors[i];
+        color = color.replace('#','');
+        colors.push(color);
+      }
+      if(colors.length === 0) {
+        if(this.isDark) {
+          colors.push("ffffff");
+        } else {
+          colors.push("000000");
+        }
+      }
+      localStorage.setItem('capsule_colors', JSON.stringify(colors));
+      EventBus.$emit('changeColors', colors);
+    },
+    arrayRemove(array, value) {
+      return array.filter(function(ele) {
+        return ele !== value;
+      });
+    },
     logout() {
       this.active = false;
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('capsule_bg');
+      var colors = ['69D2E7', '1B676B', 'BEF202', 'EBE54D', '00CDAC', '1693A5', 'F9D423', 'FF4E50', 'E7204E', '0CCABA', 'FF006F'];
+      localStorage.setItem('capsule_colors', JSON.stringify(colors));
+      localStorage.removeItem('device_id');
+      localStorage.removeItem('email');
       this.$router.push({name: 'home'})
     },
     changeBg(color) {
-      EventBus.$emit('changeBg', color);
       if(color==="Dark") {
         this.isDark = true;
+        localStorage.setItem('capsule_bg', 'Dark');
       } else {
         this.isDark = false;
+        localStorage.setItem('capsule_bg', 'Light');
       }
+      if(this.selectedColors.length === 0) {
+        var colors = [];
+        if(this.isDark) {
+          colors.push("ffffff");
+        } else {
+          colors.push("000000");
+        }
+        localStorage.setItem('capsule_colors', JSON.stringify(colors));
+        EventBus.$emit('changeColors', colors);
+      }
+      EventBus.$emit('changeBg', color);
     },
     async getPlaylists() {
       const response = await SpotifyService.getPlaylists(localStorage.access_token, this.playlistOffset);
@@ -204,6 +358,12 @@ export default {
       }
       this.getPlaylists();
     }
+  },
+  watch: {
+    capsuleAmount: (val) => {
+      EventBus.$emit('changeCapsuleAmount', val);
+      localStorage.setItem('capsule_amount', val);
+    }
   }
 }
 </script>
@@ -211,7 +371,7 @@ export default {
 <style scoped>
 
 :root {
-  --sidebar-width: 300px;
+  --sidebar-width: 550px;
   --toggler-size: 35px;
 }
 .sidebarx {
@@ -258,7 +418,7 @@ export default {
 
 .menu_toggler_line_Light {
   height: calc(35px / 5);
-  background: black;
+  background: #6c757d;
   position: absolute;
   left: 0;
   right: 0;

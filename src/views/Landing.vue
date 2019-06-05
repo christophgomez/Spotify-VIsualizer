@@ -87,7 +87,8 @@ export default {
 			for (i = 0; i <= this.NUM_PARTICLES; i++) {
         x = this.random(this.width);
         y = this.random(this.height);
-        particle = new Particle(x, y);
+        console.log("Colors: "+JSON.parse(localStorage.capsule_colors));
+        particle = new Particle(x, y, JSON.parse(localStorage.capsule_colors));
         particle.energy = this.random(particle.band / 256);
         this.particles.push(particle);
 			}

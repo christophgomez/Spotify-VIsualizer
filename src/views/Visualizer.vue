@@ -96,12 +96,6 @@ export default {
 		cancelAllVisuals(){
 			this.visualSelected.capsules = false;
 		},
-		setCapsuleSettings(capsuleColors, backgroundColors) {
-			this.settings.capsuleSettings.capsuleColors = [];
-			this.settings.capsuleSettings.capsuleColors.push(capsuleColors);
-			this.settings.capsuleSettings.backgroundColors = [];
-			this.settings.capsuleSettings.backgroundColors.push(backgroundColors);
-		},
 		async transfer() {
 			const response = await SpotifyService.transferDevicePlayer({player_id: localStorage.device_id, access_token: localStorage.access_token, play: true});
 			if(response.data.success === true) {

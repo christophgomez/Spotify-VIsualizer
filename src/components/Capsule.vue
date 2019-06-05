@@ -32,16 +32,25 @@ export default {
     window.cancelAnimationFrame(this.requestid);
   },
   mounted() {
-
     this.canvas = document.getElementById("canvas");
     this.ctx = this.canvas.getContext("2d");
     this.resizeCanvas();
     window.addEventListener('resize', this.resizeCanvas, false);
 
-    if(this.isDark === true) {
-      this.darkBg();
+    if(localStorage.capsule_bg)
+    {
+      if(localStorage.capsule_bg === 'Dark') {
+        this.darkBg();
+      } else {
+        this.lightBg();
+      }
     } else {
-      this.lightBg();
+      localStorage.setItem('capsule_bg', 'Dark');
+      this.darkBg();
+    }
+
+    if(localStorage.capsule_amount) {
+      this.NUM_CAPSULES = localStorage.capsule_amount;
     }
 
     EventBus.$on('changeBg', (data) => {
@@ -51,6 +60,23 @@ export default {
 				this.lightBg();
 			}
     });
+
+    EventBus.$on('changeColors', (data) => {
+      this.changeColors(data);
+    });
+
+    EventBus.$on('changeCapsuleAmount', (data) => {
+      this.changeCapsuleAmount(data);
+    });
+
+    window.onbeforeunload = function(){
+      this.capsules = [];
+      this.bands = null;
+      this.ctx = null;
+      this.canvas = null;
+      window.cancelAnimationFrame(this.requestid);
+    }
+
     this.setup();
   },
   methods: {
@@ -76,13 +102,22 @@ export default {
       window.cancelAnimationFrame(this.requestid);
       this.setup();
     },
+    changeColors() {
+      cancelAnimationFrame(this.requestid);
+      this.setup();
+    },
+    changeCapsuleAmount(amount) {
+      this.NUM_CAPSULES = amount;
+      cancelAnimationFrame(this.requestid);
+      this.setup();
+    },
     setup() {
       this.capsules = [];
       var i, j, capsule, x, y;
       for (i = 0; i < this.NUM_CAPSULES; i++) {
         x = this.random(this.width);
         y = this.random(this.height);
-        capsule = new Capsule(x, y);
+        capsule = new Capsule(x, y, JSON.parse(localStorage.capsule_colors));
         capsule.energy = this.random(capsule.band / 256);
         this.capsules.push(capsule);
       }

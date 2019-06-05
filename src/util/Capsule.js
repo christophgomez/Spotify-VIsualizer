@@ -19,7 +19,6 @@ const SIZE = {
 	MIN: 1.0,
 	MAX: 1.25
 };
-const COLORS = ['#69D2E7', '#1B676B', '#BEF202', '#EBE54D', '#00CDAC', '#1693A5', '#F9D423', '#FF4E50', '#E7204E', '#0CCABA', '#FF006F'];
 
 function random (min, max = undefined) {
 
@@ -47,18 +46,29 @@ function isNumber(object) {
 
 var Capsule = class Capsule {
 
-	constructor(x1 = 0, y1 = 0) {
+	constructor(x1 = 0, y1 = 0, COLORS = []) {
 		this.x = x1;
 		this.y = y1;
+		this.COLORS = [];
+		this.COLORS = COLORS;
+		for (var i = 0; i < this.COLORS.length; i++) {
+			let symb = '#';
+			let color = `${symb}${this.COLORS[i]}`;
+			this.COLORS[i] = color;
+		}
 		this.reset();
 	}
-	
+
+	resetColor() {
+		this.color = random(this.COLORS);
+	}
+
 	reset() {
 		this.level = 1 + Math.floor(random(4));
 		this.scale = random(SCALE.MIN, SCALE.MAX);
 		this.alpha = random(ALPHA.MIN, ALPHA.MAX);
 		this.speed = random(SPEED.MIN, SPEED.MAX);
-		this.color = random(COLORS);
+		this.color = random(this.COLORS);
 		this.size = random(SIZE.MIN, SIZE.MAX);
 		this.spin = random(SPIN.MAX, SPIN.MAX);
 		this.band = Math.floor(random(NUM_BANDS));
