@@ -79,8 +79,10 @@ export default {
 		window.addEventListener("message", (event) => {
 			if (event.source != window)
 				return;
-			if(event.data.type = "frequency_data")
-				this.$refs.Capsule.bands = event.data.data;
+			if(event.data.type = "frequency_data"){
+				if(this.$refs.Capsule !== undefined)
+					this.$refs.Capsule.bands = event.data.data;
+			}
 		});
 
 		EventBus.$on('changeVisual', (data) => {
@@ -103,7 +105,7 @@ export default {
 		async transfer() {
 			const response = await SpotifyService.transferDevicePlayer({player_id: localStorage.device_id, access_token: localStorage.access_token, play: true});
 			if(response.data.success === true) {
-				this.$refs.Capsule.setup();
+				//this.$refs.Capsule.setup();
 				this.transferred = true;
 			}
 		},

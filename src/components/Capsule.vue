@@ -69,10 +69,6 @@ export default {
     });
 
     window.onbeforeunload = function(){
-      this.capsules = [];
-      this.bands = null;
-      this.ctx = null;
-      this.canvas = null;
       window.cancelAnimationFrame(this.requestid);
     }
 
@@ -111,6 +107,7 @@ export default {
       this.setup();
     },
     setup() {
+      console.log("Setup ran");
       this.capsules = [];
       var i, j, capsule, x, y;
       for (i = 0; i < this.NUM_CAPSULES; i++) {
