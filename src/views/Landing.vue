@@ -5,11 +5,13 @@
       <div class='overlay'>
         <h1>Spotilize</h1><hr>
         <div id='extCheck'></div>
-        <div v-if='ext===true'>
-          <Link/>
-        </div>
-        <div v-else>
-          <md-button class="md-raised chr" @click='install()'>Add to Chrome</md-button>
+        <div v-if='isChrome===true'>
+          <div v-if='ext===true'>
+            <Link/>
+          </div>
+          <div v-else>
+            <md-button class="md-raised chr" @click='install()'>Add to Chrome</md-button>
+          </div>
         </div>
         <footer>A Spotify visualizer made with <font-awesome-icon icon=heart style='color:red' /> by Christopher Gomez</footer>
       </div>
@@ -37,22 +39,28 @@ export default {
       ctx: null,
       canvas: HTMLElement,
       requestid: null,
+      isChrome: false
     }
   },
   mounted() {
-    if(chrome.runtime) {
-      chrome.runtime.sendMessage('jidcihllhnmbjbnoijfepopdpkpgeobe', 'version', (response) => {
-        if(!response) {
-          document.getElementById('extCheck').innerHTML = "<p>To use this app you need to download the Chrome Extension first</p>";
-          this.ext = false;
-        } else if(response.version) {
-          document.getElementById('extCheck').innerHTML = "<p style='font-size:1.3em'>Link your Spotify Account to begin using Spotilize</p>"
-          this.ext = true;
-        }
-      });
-    } else {
+    this.isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+    if(this.isChrome === true) {
+      if(chrome.runtime) {
+        chrome.runtime.sendMessage('jidcihllhnmbjbnoijfepopdpkpgeobe', 'version', (response) => {
+          if(!response) {
+            document.getElementById('extCheck').innerHTML = "<p>To use this app you need to download the Chrome Extension first</p>";
+            this.ext = false;
+          } else if(response.version) {
+            document.getElementById('extCheck').innerHTML = "<p style='font-size:1.3em'>Link your Spotify Account to  begin using Spotilize</p>"
+            this.ext = true;
+          }
+        });
+      } else {
       document.getElementById('extCheck').innerHTML = "<p>To use this app you need to download the Chrome Extension first</p>";
       this.ext = false;
+      }
+    } else {
+      document.getElementById('extCheck').innerHTML = "<p>I'm sorry!<br>Due to the nature of the technology used in this app, it is only accesible on Google Chrome.</p>";
     }
     this.canvas = document.getElementById('canvas');
 		this.sizeCanvas();
