@@ -1,7 +1,7 @@
 const NUM_BANDS = 256;
 const SCALE = {
 	MIN: 15.0,
-	MAX: 80.0
+	MAX: 50.0
 };
 const SPEED = {
 	MIN: 0.2,

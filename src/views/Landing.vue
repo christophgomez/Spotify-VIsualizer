@@ -76,12 +76,13 @@ export default {
   methods: {
     sizeCanvas() {
 			this.ratio = window.devicePixelRatio;
-			this.height = window.innerHeight;
-			this.width = window.innerWidth;
+      this.height = window.innerHeight/this.ratio;
+      this.width = window.innerWidth/this.ratio;
+
 			//scale the canvas
 			if(this.canvas !== null && this.canvas !== undefined) {
-				this.canvas.setAttribute('height', this.height * this.ratio);
-				this.canvas.setAttribute('width', this.width * this.ratio);
+				this.canvas.setAttribute('height', this.height);
+				this.canvas.setAttribute('width', this.width);
 				this.ctx = this.canvas.getContext('2d');
         this.ctx.globalCompositeOperation = 'lighter';
         this.setup();

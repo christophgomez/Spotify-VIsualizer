@@ -13,48 +13,22 @@
           <img src="../assets/logo.png" alt="Logo" height="32" width="32">
         </h3>
       </div>
-      <!--<vs-sidebar-group :index='"1"' title="Music">
 
-        <div @click='getRecent()'>
-          <vs-sidebar-group index=1.1 title='Recently Played'>
-            <div v-for='(track, index) in recentlyPlayed' :key='index'>
-              <vs-sidebar-item :index='"1.1."+(index+1)'>{{track.name}}</vs-sidebar-item>
-            </div>
-          </vs-sidebar-group>
-        </div>
-
-        <vs-sidebar-group index=1.2 title='Your Music'>
-          <vs-sidebar-group index=1.2 title='Playlists'>
-            <vs-sidebar-item index=1.2.1 v-if='lessPlaylists===true' @click='getLessPlaylists()' icon='arrow_drop_up'>Previous</vs-sidebar-item>
-            <div v-for='(item, index) in playlists' :key='index' style='text-align:left;font-size:.9em; font-weight: 300;'>
-              <vs-sidebar-item icon='album' :index='"1.2."+(index+3)' @click='playPlaylist(item.uri)'>{{item.name}}</vs-sidebar-item>
-            </div>
-            <vs-sidebar-item index=1.2.99 v-if='morePlaylists===true' @click='getMorePlaylists()' icon='arrow_drop_down'>More</vs-sidebar-item>
-          </vs-sidebar-group>
-          <vs-sidebar-group index=1.2.2 title='Library'>
-          <vs-sidebar-group title='Saved Albums'></vs-sidebar-group>
-          <vs-sidebar-group title='Saved Tracks'></vs-sidebar-group>
-          </vs-sidebar-group>
+      <vs-sidebar-group title="Visualizations">
+        <ul style='text-align:left;position:relative;left:-4em; list-style: none;'>
+              <li style='text-align:left'>
+                <vs-radio v-model='activeVisual' vs-value='Capsules' style='text-align:left;width:100%'>Capsules</vs-radio>
+              </li>
+              <li>
+                <vs-radio v-model='activeVisual' vs-value='Three' style='left:-.75em;text-align:left'>Lamp (Work in progress)</vs-radio>
+              </li>
+            </ul>
         </vs-sidebar-group>
 
-        <vs-sidebar-group index=1.3 title='Browse'>
-          <vs-sidebar-group index=1.3.4 title='Discover'><h4>Coming Soon</h4></vs-sidebar-group>
-          <vs-sidebar-group index=1.3.1 title='Categories'><h4>Coming Soon</h4></vs-sidebar-group>
-          <vs-sidebar-group index=1.3.2 title='Featured Playlists'><h4>Coming Soon</h4></vs-sidebar-group>
-          <vs-sidebar-group index=1.3.3 title='New Releases'><h4>Coming Soon</h4></vs-sidebar-group>
-        </vs-sidebar-group>
-      </vs-sidebar-group>-->
-      
-      <vs-sidebar-group index=2 title='Visuals'>
-
-        <!--<ul style='text=align:left;position:relative;left:-4em;'>
-          <li style='text=align:left'>
-            <vs-radio v-model='activeVisual' vs-value='Capsules' style='text=align:left'>Capsules</vs-radio>
-            <vs-radio v-model='activeVisual' vs-value='Three' style='text=align:left'>Three</vs-radio>
-          </li>
-        </ul>-->
-
+        
         <vs-sidebar-group index=2.2 title='Settings'>
+
+          <div v-if="activeVisual==='Capsules'">
 
           <vs-sidebar-group title='Capsule Amount'>
             <vs-input-number v-model='capsuleAmount' style='background:white'/>
@@ -73,14 +47,16 @@
           </vs-sidebar-group>
 
           <vs-sidebar-group title='Background Color'>
-            <ul style='text=align:left;position:relative;left:-4em;'>
-              <li style='text=align:left'>
-                <vs-radio v-model='backgroundColor' vs-value='Dark' style='text=align:left' @click="changeBg('Dark')">Dark</vs-radio>
-                <vs-radio v-model='backgroundColor' vs-value='Light' style='text=align:left' @click="changeBg('Light')">Light</vs-radio>
+            <ul style='text-align:left;position:relative;left:-4em; list-style: none;'>
+              <li style='text-align:left'>
+                <vs-radio v-model='backgroundColor' vs-value='Dark' style='text-align:left' @click="changeBg('Dark')">Dark</vs-radio>
+              </li>
+              <li>
+                <vs-radio v-model='backgroundColor' vs-value='Light' style='text-align:left' @click="changeBg('Light')">Light</vs-radio>
               </li>
             </ul>
           </vs-sidebar-group>
-      </vs-sidebar-group>
+          </div>
       </vs-sidebar-group>
 
       <vs-sidebar-group index=4 title='Info'>
@@ -117,16 +93,6 @@ export default {
       visualizations: false,
       settings: false,
       active: false,
-      playlists:[],
-      playlistOffset: 0,
-      morePlaylists: true,
-      lessPlaylists: false,
-      playlistId: null,
-      tracks:[],
-      trackOffset: 0,
-      moreTracks: true,
-      lessTracks: false,
-      recentlyPlayed: [],
       activeVisual: 'Capsules',
       backgroundColor: 'Dark',
       isDark: true,
