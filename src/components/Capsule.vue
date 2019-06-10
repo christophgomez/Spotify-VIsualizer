@@ -57,10 +57,9 @@ export default {
       window.onresize = null;
     });
 
-    EventBus.$on('bandData', (data) => {
-      if(this.active)
-        this.bands = data;
-    })
+    EventBus.$on("bandData", data => {
+      if (this.active) this.bands = data;
+    });
 
     window.onbeforeunload = function() {
       window.cancelAnimationFrame(this.animationRequest);
@@ -155,30 +154,28 @@ export default {
         );
 
         // Draw the capsules
-        if (this.bands !== null && this.capsules !== null) {
-          let capsule;
-          for (let j = 0; j < this.capsules.length; j++) {
-            capsule = this.capsules[j];
+        let capsule;
+        for (let j = 0; j < this.capsules.length; j++) {
+          capsule = this.capsules[j];
 
-            // Set the width of the capsule
-            if (this.bands !== undefined && this.bands !== null) {
-              capsule.energy = (this.bands[capsule.band] / 256) * 1.5;
-            }
-
-            // recycle capsules
-            if (capsule.y < -capsule.size * capsule.level * capsule.scale) {
-              capsule.reset();
-              capsule.x = this.random(this.width);
-              capsule.y =
-                this.height + capsule.size * capsule.scale * capsule.level;
-            }
-
-            // Move the capsule to new position
-            capsule.move();
-            capsule.draw(this.ctx);
+          // Set the width of the capsule
+          if (this.bands !== undefined && this.bands !== null) {
+            capsule.energy = (this.bands[capsule.band] / 256) * 1.5;
           }
-          this.animationRequest = requestAnimationFrame(this.update);
+
+          // recycle capsules
+          if (capsule.y < -capsule.size * capsule.level * capsule.scale) {
+            capsule.reset();
+            capsule.x = this.random(this.width);
+            capsule.y =
+              this.height + capsule.size * capsule.scale * capsule.level;
+          }
+
+          // Move the capsule to new position
+          capsule.move();
+          capsule.draw(this.ctx);
         }
+        this.animationRequest = requestAnimationFrame(this.update);
       } else {
         return;
       }
