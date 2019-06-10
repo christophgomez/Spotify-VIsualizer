@@ -300,10 +300,9 @@ module.exports = function (app, io) {
 					email: body.email,
 					url: body.external_urls.spotify,
 					followerTotal: body.followers.total,
-					type: body.product,
+					profileType: body.product,
 				});
 			} else {
-				console.log(body);
 				return res.send({
 					success: false
 				});

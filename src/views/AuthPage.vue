@@ -3,7 +3,7 @@
     <div id='container'>
     <canvas id='canvas'></canvas>
     <div class='overlay'>
-    <div v-if='success===true' class='success'>
+    <div v-if="success==='successful'" class='success'>
         <h1>Spotify Link Successful!</h1>
         <hr>
         <p>Only a couple more steps before you can begin rocking out to sweet visuals!</p>
@@ -14,10 +14,16 @@
         </ol>
         <small>(Forget the app URL! You'll click that extension icon everytime you want to use the app from now on, otherwise the visualizer wont function properly. Trust me!)</small><br><br>
     </div>
-    <div v-if='success===false' class='fail'>
+    <div v-else-if="success==='false'" class='fail'>
         <h1>Uh oh!</h1>
         <hr>
         <p>Something went wrong linking your Spotify Account</p><font-awesome-icon icon='frown' size="3x"/> <br><br><p>Please go back and try again</p>
+    </div>
+    <div v-else-if="success==='basic'" class='fail'>
+      <h1>Uh Oh!</h1>
+      <hr>
+      <p>I'm sorry, this app only works with Spotify Premium. Consider upgrading your account!</p>
+      <br><p>(The benefits are worth it)</p>
     </div>
     </div>
     </div>
@@ -52,7 +58,7 @@ export default {
       this.exchange();
     }
     if(this.$route.query.error) {
-      this.success = false;
+      this.success = 'false';
     }
     this.canvas = document.getElementById('canvas');
 		this.sizeCanvas();
@@ -127,11 +133,20 @@ export default {
       var code = this.code;
       const response = await SpotifyService.exchange({code});
       if(response.data.success === true) {
-        this.success = true;
-        localStorage.setItem('access_token', response.data.access_token);
-        localStorage.setItem('refresh_token', response.data.refresh_token);
+        const re2 = await SpotifyService.getProfile(response.data.access_token);
+        if(re2.data.success === true) {
+          if(re2.data.profileType === "premium") {
+            this.success = 'successful';
+            localStorage.setItem('access_token', response.data.access_token);
+            localStorage.setItem('refresh_token', response.data.refresh_token);
+          } else {
+            this.success = 'basic';
+          }
+        } else {
+          this.success = 'false';
+        }
       } else {
-        this.success = false;
+        this.success = 'false';
       }
     },
     cont() {
