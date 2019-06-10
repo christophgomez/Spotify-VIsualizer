@@ -2,15 +2,15 @@
   <div id="visualizer" ref="vis">
     <div id="Visuals">
       <div v-show="visualSelected.capsules === true" style='height:100%'>
-        <Capsule ref="Capsule"></Capsule>
+        <Capsule></Capsule>
       </div>
-      <div v-show="visualSelected.three === true" style='height:100%;'>
+      <div v-show="visualSelected.lamp === true" style='height:100%;'>
         <Lamp></Lamp>
       </div>
     </div>
 
     <b-modal ref="myModalRef" ok-only style="color:black;text-align:center" title="Whoops...">
-      <p>Click the Spotilize extension button in the Chrome toolbar to start the visualizer the press the esc key!</p>
+      <p>Click the Spotilize extension button in the Chrome toolbar to start the visualizer!</p>
     </b-modal>
   </div>
 </template>
@@ -35,14 +35,14 @@ export default {
       isPaused: false,
       visualSelected: {
         capsules: true,
-        three: false
+        lamp: false
       },
       settings: {
         capsuleSettings: {
           capsuleColors: [],
           backgroundColors: []
         }
-      }
+      },
     };
   },
   sockets: {
@@ -104,7 +104,7 @@ export default {
     cancelAllVisuals() {
       EventBus.$emit("deactivate");
       this.visualSelected.capsules = false;
-      this.visualSelected.three = false;
+      this.visualSelected.lamp = false;
     },
     changeVisual(visual) {
       this.cancelAllVisuals();
@@ -113,8 +113,8 @@ export default {
           this.visualSelected.capsules = true;
           EventBus.$emit("activateCapsules");
           break;
-        case "Three":
-          this.visualSelected.three = true;
+        case "Lamp":
+          this.visualSelected.lamp = true;
           EventBus.$emit("activateLamp");
           break;
       }
@@ -131,8 +131,8 @@ export default {
             this.visualSelected.capsules = true;
             EventBus.$emit("activateCapsules");
             break;
-          case "Three":
-            this.visualSelected.three = true;
+          case "Lamp":
+            this.visualSelected.lamp = true;
             EventBus.$emit("activateLamp");
             break;
         }

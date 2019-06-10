@@ -140,7 +140,8 @@ export default {
       animationRequest: null,
       active: false,
       NUM_BANDS: 256,
-      bands: null
+      bands: null,
+      smokeParticles: []
     };
   },
   beforeDestroy() {
@@ -158,10 +159,9 @@ export default {
       window.cancelAnimationFrame(this.animationRequest);
     });
 
-    EventBus.$on('bandData', (data) => {
-      if(this.active)
-        this.bands = data;
-    })
+    EventBus.$on("bandData", data => {
+      if (this.active) this.bands = data;
+    });
 
     window.onbeforeunload = function() {
       window.cancelAnimationFrame(this.animationRequest);
@@ -192,12 +192,26 @@ export default {
       this.controls.maxPolarAngle = Math.PI / 2.1;
       this.controls.minPolarAngle = 0.0;
 
-      this.camera.position.set(0, 40, 20);
+      this.camera.position.set(20, 20, 20);
       this.camera.lookAt(this.scene.position);
+
+      var camera_pivot = new THREE.Object3D();
+      this.camera.camera_pivot = camera_pivot;
+      this.Y_AXIS = new THREE.Vector3(0, 1, 0);
+
+      this.scene.add(camera_pivot);
+      camera_pivot.add(this.camera);
+      this.camera.lookAt(camera_pivot.position);
 
       this.render = this.initRenderer(this.scene, this.camera);
 
-      this.onResize();
+      EventBus.$on("toggleLampBloom", data => {
+        this.render.bloom.enabled = data;
+      });
+
+      EventBus.$on("toggleLampRays", data => {
+        this.render.rays.enabled = data;
+      });
 
       const lights = this.initLights(this.scene);
 
@@ -209,7 +223,7 @@ export default {
         this.objMesh = object;
         this.objMesh.rotation.x = Math.PI / 2;
         this.objMesh.position.y = 5;
-        this.objMesh.scale.set(1, 1, 1);
+        this.objMesh.scale.set(1.5, 1.5, 1.5);
 
         object.traverse(child => {
           if (child instanceof THREE.Mesh) {
@@ -232,9 +246,9 @@ export default {
         const sphere = new THREE.Mesh(sphereGeom, sphereMat);
         sphere.position.y = 5;
         this.sphere = {
-          obj: sphere, 
+          obj: sphere,
           band: Math.floor(this.random(this.NUM_BANDS))
-        }
+        };
         //this.scene.add(sphere);
         this.scene.add(this.objMesh);
       };
@@ -247,19 +261,29 @@ export default {
       const floor = this.addFloor(this.scene);
     },
     update() {
-      if(this.active && this.scene !== null) {
+      if (this.active && this.scene !== null) {
         this.onResize();
 
         this.stats.begin();
         this.controls.update();
 
-        this.scene.rotation.y = Math.cos(Date.now() * 0.0001);
-        this.scene.rotation.x = Math.sin(Date.now() * 0.0001);
+        //var x = this.camera.position.x;
+        //var z = this.camera.position.z;
+        //this.camera.position.y = Math.cos(Date.now() * 0.001);
+        //this.camera.position.x = x * Math.sin(Date.now() * 0.0001) - z *Math.cos(Date.now()*.0001);
+        //this.camera.position.z = z * Math.cos(Date.now() *.0001) - x * Math.sin(Date.now() * .0001);
+        //this.camera.position.x = Math.cos(this.angle * 0.1);
+        //this.camera.position.z = Math.sin(this.angle * 0.1);
+        //this.camera.position.y = Math.cos(this.angle) + 40;
+        //this.angle += 0.01;
+        //this.camera.position.z = z * Math.cos(this.controls.rotSpeed) - x * Math.sin(this.controls.rotSpeed);
+        this.camera.camera_pivot.rotateOnAxis(new THREE.Vector3(1, 1, 0),0.0015);
+        this.camera.lookAt(this.scene.position);
 
-        if(this.bands !== null && this.bands !== undefined) {
-          for(var i = 0; i < this.lights.length; i++) {
+        if (this.bands !== null && this.bands !== undefined) {
+          for (var i = 0; i < this.lights.length; i++) {
             var light = this.lights[i];
-            light.obj.power = (this.bands[light.band] / 256) * 50;
+            light.obj.power = this.bands[light.band];
           }
         }
 
@@ -277,18 +301,34 @@ export default {
 
       const renderer = new THREE.WebGLRenderer({
         alpha: false,
-        antialias: true,
+        antialias: false,
         canvas: canvas,
         depth: false,
         powerPreference: "high-performance"
       });
-
       renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.shadowMap.type = THREE.BasicShadowMap;
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+
+      const effectComposer = new THREE.EffectComposer(renderer);
+
+      const render = (scene, camera) => {
+        effectComposer.render(scene, camera);
+      };
+      render.renderer = renderer;
+      render.composer = effectComposer;
 
       const renderPass = new THREE.RenderPass(scene, camera);
+      effectComposer.addPass(renderPass);
+
       const fxaaPass = new THREE.ShaderPass(this.FXAAShader);
+      fxaaPass.renderToScreen = true;
       fxaaPass.uniforms["resolution"].value.set(1 / width, 1 / height);
+      render.fxaa = fxaaPass;
+      effectComposer.addPass(fxaaPass);
 
       const bloomPass = new THREE.UnrealBloomPass(
         new THREE.Vector2(width, height),
@@ -296,47 +336,33 @@ export default {
         1,
         0.75
       );
+      bloomPass.renderToScreen = true;
+      bloomPass.enabled = false;
+      if (localStorage.lampBloom) {
+        if (localStorage.lampBloom === "true") {
+          bloomPass.enabled = true;
+        }
+      }
+      render.bloom = bloomPass;
+      effectComposer.addPass(bloomPass);
 
       const raysPass = new THREE.ShaderPass(this.RaysShader);
-
-      const effectComposer = new THREE.EffectComposer(renderer);
-      effectComposer.addPass(renderPass);
-      effectComposer.addPass(fxaaPass);
-      effectComposer.addPass(bloomPass);
-      effectComposer.addPass(raysPass);
-
-      /*window.addEventListener("resize", () => {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        const pixelRatio = renderer.getPixelRatio();
-        const newWidth = Math.floor(width / pixelRatio);
-        const newHeight = Math.floor(height / pixelRatio);
-
-        this.camera.aspect = width / height;
-        this.camera.updateProjectionMatrix();
-        renderer.setSize(width, height);
-        if (fxaaPass) {
-          fxaaPass.uniforms["resolution"].value.set(
-            1 / window.innerWidth,
-            1 / window.innerHeight
-          );
+      raysPass.renderToScreen = true;
+      raysPass.enabled = false;
+      if (localStorage.lampRays) {
+        if (localStorage.lampRays === "true") {
+          raysPass.enabled = true;
         }
-        effectComposer.setSize(newWidth, newHeight);
-      });*/
-
-      const render = (scene, camera) => {
-        ///effectComposer.render(scene, camera);
-        renderer.render(scene, camera);
-      };
-
-      render.renderer = renderer;
+      }
+      render.rays = raysPass;
+      effectComposer.addPass(raysPass);
 
       return render;
     },
     addFloor(scene) {
       const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x990033 });
       const floor = new THREE.Mesh(
-        new THREE.CubeGeometry(1000, 2, 1000),
+        new THREE.BoxBufferGeometry(1000, 2, 1000),
         floorMaterial
       );
       floor.position.y = 0;
@@ -345,28 +371,64 @@ export default {
     },
     initLights(scene) {
       const c = 0xffffff;
-      const sphere = new THREE.SphereBufferGeometry( 0.25, 16, 8 );
+      const sphere = new THREE.SphereBufferGeometry(0.25, 16, 8);
 
-      for(var i = -2; i <= 2; i++) {
-        const p = new THREE.PointLight(c, 1.5, 20, 2);
+      for (var i = 0; i < 4; i++) {
+        const p = new THREE.PointLight(c, 1.5, 20, 1);
         //p.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial( { color: c })));
-        p.position.x = i;
-        p.position.y = 9;
+        p.position.x = 0;
+        p.position.y = 10;
         p.castShadow = true;
         this.addLight(p);
         scene.add(p);
       }
 
-      var ambientLight = new THREE.AmbientLight(0x400040, 0.7);
-      //scene.add(ambientLight);
+      var spotLight = new THREE.SpotLight(c, 1, 30, 0.6, 1, 1);
+      spotLight.position.y = 40;
+      spotLight.castShadow = true;
+      this.addLight(spotLight);
+      scene.add(spotLight);
+      //var lightHelper = new THREE.SpotLightHelper(spotLight);
+      //scene.add(lightHelper);
 
-      scene.fog = new THREE.FogExp2(0x000000, 0.001);
+      var ambientLight = new THREE.AmbientLight(c, 0.1);
+      scene.add(ambientLight);
+
+      scene.fog = new THREE.Fog(0xffffff);
+    },
+    addFog() {
+      const loader = new THREE.TextureLoader();
+      var smokeTexture = loader.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/95637/Smoke-Element.png');
+      var smokeMaterial = new THREE.MeshLambertMaterial({
+        color: 0x00dddd,
+        map: smokeTexture,
+        transparent: true
+      });
+      var smokeGeo = new THREE.PlaneBufferGeometry(20, 20);
+
+      for (var p = 0; p < 200; p++) {
+        var particle = new THREE.Mesh(smokeGeo, smokeMaterial);
+        particle.position.set(
+          Math.random() * 10,
+          0,
+          Math.random() * 10
+        );
+        particle.rotation.z = Math.random() * 360;
+        this.scene.add(particle);
+        this.smokeParticles.push(particle);
+      }
+    },
+    evolveFog(delta) {
+      var sp = this.smokeParticles.length;
+      while (sp--) {
+        this.smokeParticles[sp].rotation.z += delta;
+      }
     },
     addLight(light) {
       var light = {
         obj: light,
         band: Math.floor(this.random(this.NUM_BANDS))
-      }
+      };
       this.lights.push(light);
     },
     onResize() {
@@ -374,10 +436,13 @@ export default {
       const width = this.canvas.clientWidth;
       const height = this.canvas.clientHeight;
       if (this.canvas.width !== width || this.canvas.height !== height) {
-
         // you must pass false here or three.js sadly fights the browser
         this.render.renderer.setPixelRatio(window.devicePixelRatio);
         this.render.renderer.setSize(width, height, false);
+        this.render.fxaa.uniforms["resolution"].value.set(
+          1 / width,
+          1 / height
+        );
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
         this.controls.update();
@@ -385,11 +450,10 @@ export default {
         // set render target sizes here
       }
     },
-    random(min, max=undefined) {
-      if(typeof max != "number")
-        max = min || 1, min = 0;
+    random(min, max = undefined) {
+      if (typeof max != "number") (max = min || 1), (min = 0);
 
-	    return min + Math.random() * (max - min);
+      return min + Math.random() * (max - min);
     }
   }
 };

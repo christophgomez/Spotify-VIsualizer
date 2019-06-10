@@ -97,8 +97,7 @@ import NProgress from 'vue-nprogress'
 Vue.use(NProgress)
 const nprogress = new NProgress({
   parent: "body"
-})
-
+});
 
 Vue.config.productionTip = false
 

@@ -62,19 +62,23 @@ var background = {
 	navToWebsite() {
 		background.leaving = false;
 		chrome.tabs.getSelected((tab) => {
+			
 			background.tabId = tab.id
 			let matches = ["https://spotilize.herokuapp.com/visualizer", 'http://localhost:8080/visualizer'];
 			let onsite = false;
+
 			for (let j in matches) {
 				if (tab.url === matches[j]) {
 					onsite = true;
 				}
 			}
+
 			if (onsite === false) {
 				chrome.tabs.update(background.tabId, {
 					url: "https://spotilize.herokuapp.com"
 				});
 			}
+
 			background.startCap();
 			chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 				// do something here

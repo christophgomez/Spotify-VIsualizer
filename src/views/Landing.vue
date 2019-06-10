@@ -13,7 +13,7 @@
             <md-button class="md-raised chr" @click='install()'>Add to Chrome</md-button>
           </div>
         </div>
-        <footer>A Spotify visualizer made with <font-awesome-icon icon=heart style='color:red' /> by Christopher Gomez</footer>
+        <footer>A Spotify visualizer made with <font-awesome-icon icon=heart style='color:red' /> by <a :href="'https://www.linkedin.com/in/christopher-gomez-8489a7186/'" target="_blank">Christopher Gomez</a></footer>
       </div>
     </div>
   </div>
